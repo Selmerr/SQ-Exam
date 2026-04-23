@@ -32,6 +32,7 @@ public class Account {
     private List<CharacterAvatar> characters = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Role role;
 
     public Account() {}
