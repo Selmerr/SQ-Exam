@@ -1,7 +1,7 @@
 package dk.ek.gruppe2.chooseyourfate.controller;
 
 import dk.ek.gruppe2.chooseyourfate.dto.Neo4jMigrationResponseDTO;
-import dk.ek.gruppe2.chooseyourfate.service.neo4j.Neo4jMigrationService;
+import dk.ek.gruppe2.chooseyourfate.service.migration.neo4j.Neo4jMigrationService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;

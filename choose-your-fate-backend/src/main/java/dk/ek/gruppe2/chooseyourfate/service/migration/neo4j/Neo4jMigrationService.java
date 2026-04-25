@@ -1,4 +1,4 @@
-package dk.ek.gruppe2.chooseyourfate.service.neo4j;
+package dk.ek.gruppe2.chooseyourfate.service.migration.neo4j;
 
 import dk.ek.gruppe2.chooseyourfate.dto.Neo4jMigrationResponseDTO;
 import dk.ek.gruppe2.chooseyourfate.model.mysql.*;
