@@ -9,5 +9,5 @@ public class CollectionNames {
     public static final String QUESTS = "quests";
     public static final String CHOICES = "choices";
     public static final String SCENES = "scenes";
-    public static final String CHARACTERS = "characters";
+    public static final String CHARACTERS = "character_avatar";
 }
