@@ -54,6 +54,9 @@ public class QuestService {
     }
 
     public void deleteQuest(Integer id) {
+        if (!questRepository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
         questRepository.deleteById(id);
     }
 }
