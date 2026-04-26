@@ -35,6 +35,7 @@ public class SecurityConfig {
                 .requestMatchers("/choose-your-fate/chapter/**").hasAnyRole("USER", "ADMIN")
                 .requestMatchers("/choose-your-fate/scene/**").hasAnyRole("USER", "ADMIN")
                 .requestMatchers("/choose-your-fate/choice/**").hasAnyRole("USER", "ADMIN")
+                .requestMatchers("/choose-your-fate/inventories/**").authenticated()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
