@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/choose-your-fate/npc")
+@RequestMapping("/choose-your-fate/npcs")
 public class NpcController {
 
     private NpcService npcService;
