@@ -73,6 +73,6 @@ public class SqlChoiceService implements ChoiceDataAccess  {
 
     private Scene getSceneById(Integer sceneId){
         return sceneRepository.findById(sceneId)
-            .orElseThrow(() -> new ResourceNotFoundException("Choice not found with id: " + sceneId));
+            .orElseThrow(() -> new ResourceNotFoundException("Scene not found with id: " + sceneId));
     }
 }
