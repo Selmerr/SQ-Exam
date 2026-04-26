@@ -16,8 +16,8 @@ import java.util.List;
 @Service
 public class NpcService {
 
-    public NpcRepository npcRepository;
-    public RaceDetailsRepository raceDetailsRepository;
+    private final NpcRepository npcRepository;
+    private final RaceDetailsRepository raceDetailsRepository;
 
     public NpcService(NpcRepository npcRepository, RaceDetailsRepository raceDetailsRepository) {
         this.npcRepository = npcRepository;
