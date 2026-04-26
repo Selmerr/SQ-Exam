@@ -1,4 +1,4 @@
-package dk.ek.gruppe2.chooseyourfate.dto;
+/*package dk.ek.gruppe2.chooseyourfate.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 public class InventoryRequestDTO {
 
-    //Empty for now, since we don't manually create inventories.
-    //But we might need it if we add more fields later, like size, capacity.
+    Empty for now, since we don't manually create inventories.
+    But we might need it if we add more fields later, like size, capacity.
 
-}
+}*/
