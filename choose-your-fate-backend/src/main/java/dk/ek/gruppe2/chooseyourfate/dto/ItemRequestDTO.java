@@ -16,11 +16,11 @@ public class ItemRequestDTO {
     private String description;
     private String type;
 
-    public Item getItemEntity(ItemRequestDTO requestDTO) {
+    public Item getItemEntity() {
         Item item = new Item();
-        item.setName(requestDTO.getName());
-        item.setDescription(requestDTO.getDescription());
-        item.setType(requestDTO.getType());
+        item.setName(getName());
+        item.setDescription(getDescription());
+        item.setType(getType());
         return item;
     }
 
