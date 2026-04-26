@@ -27,7 +27,7 @@ public class InventoryService {
     }
 
     public InventoryResponseDTO getInventoryData(Integer id) {
-        Inventory inventory = inventoryRepository.findById(id).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND));;
+        Inventory inventory = inventoryRepository.findById(id).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND));
         List<Item> items = inventoryHasItemRepository.findByInventory_Id(id).stream().map((inventoryHasItem -> inventoryHasItem.getItem())).toList();
         List<ItemResponseDTO> itemResponseDTOS = items.stream().map((item -> new ItemResponseDTO(item))).toList();
         InventoryResponseDTO response = new InventoryResponseDTO(inventory.getCharacter().getName(), itemResponseDTOS);
