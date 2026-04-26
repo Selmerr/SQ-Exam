@@ -12,7 +12,7 @@ import java.util.List;
 @RequestMapping("/choose-your-fate/quests")
 public class QuestController {
 
-    QuestService questService;
+    private final QuestService questService;
 
     public QuestController(QuestService questService) {
         this.questService = questService;
