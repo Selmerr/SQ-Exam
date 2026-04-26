@@ -44,7 +44,11 @@ public class NpcService {
 
     public NpcResponseDTO updateNpc(Integer id, NpcRequestDTO npcRequestDTO) {
         Npc npc = npcRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        //Need to add raceDetails
+        if (npcRequestDTO.getRaceDetailsId() != null) {
+            RaceDetails raceDetails = raceDetailsRepository.findById(npcRequestDTO.getRaceDetailsId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+            npc.setRaceDetails(raceDetails);
+        }
         npc.setName(npcRequestDTO.getName());
         npcRepository.save(npc);
         return new NpcResponseDTO(npc);
