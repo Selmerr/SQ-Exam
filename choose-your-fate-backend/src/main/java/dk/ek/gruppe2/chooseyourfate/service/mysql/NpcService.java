@@ -35,11 +35,11 @@ public class NpcService {
         return new NpcResponseDTO(npc);
     }
 
-    public ResponseEntity<Boolean> createNpc(NpcRequestDTO npcRequestDTO) {
+    public ResponseEntity<NpcResponseDTO> createNpc(NpcRequestDTO npcRequestDTO) {
         RaceDetails raceDetails = raceDetailsRepository.findById(npcRequestDTO.getRaceDetailsId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         Npc npc = npcRequestDTO.getNpcEntity(raceDetails);
-        npcRepository.save(npc);
-        return ResponseEntity.ok(true);
+        Npc savedNpc = npcRepository.save(npc);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new NpcResponseDTO(savedNpc));
     }
 
     public NpcResponseDTO updateNpc(Integer id, NpcRequestDTO npcRequestDTO) {
