@@ -32,10 +32,10 @@ public class ItemService {
         return response;
     }
 
-    public ResponseEntity<Boolean> CreateItem(ItemRequestDTO requestDTO) {
+    public ResponseEntity<ItemResponseDTO> CreateItem(ItemRequestDTO requestDTO) {
         Item item = requestDTO.getItemEntity(requestDTO);
-        itemRepository.save(item);
-        return ResponseEntity.ok(true);
+        Item savedItem = itemRepository.save(item);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ItemResponseDTO(savedItem));
     }
 
     public ItemResponseDTO updateItem(Integer itemId, ItemRequestDTO requestDTO) {
