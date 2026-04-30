@@ -1,47 +1,53 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import type { User } from "../types/general";
 
 type AuthContextType = {
-  user: User | null;
-  setUser: (user: User | null) => void;
+  token: string | null;
+  updateToken: (token: string) => void;
+  logout: () => void;
   loading: boolean;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Load user on startup
   useEffect(() => {
-    const savedUser = localStorage.getItem("user");
+    const savedToken = localStorage.getItem("token");
 
-  if (savedUser) {
-    setUser(JSON.parse(savedUser));
-  }
+    if (savedToken) {
+      setToken(savedToken);
+    }
 
-  setLoading(false);
+    setLoading(false);
   }, []);
 
-  // Save user whenever it changes
   useEffect(() => {
-    if (user) {
-      localStorage.setItem("user", JSON.stringify(user));
+    if (token) {
+      localStorage.setItem("token", token);
     } else {
-      localStorage.removeItem("user");
+      localStorage.removeItem("token");
     }
-  }, [user]);
+  }, [token]);
+
+  function updateToken(newToken: string) {
+    setToken(newToken);
+  }
+
+  function logout() {
+    setToken(null);
+  }
 
   return (
-    <AuthContext.Provider value={{ user, setUser, loading }}>
+    <AuthContext.Provider value={{ token, updateToken, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );
 }
 
 export function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) throw new Error("useAuth must be used inside AuthProvider");
-  return context;
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error("useAuth must be used inside AuthProvider");
+  return ctx;
 }
