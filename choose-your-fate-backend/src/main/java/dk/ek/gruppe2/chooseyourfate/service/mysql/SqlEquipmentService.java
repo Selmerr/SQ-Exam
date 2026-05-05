@@ -17,10 +17,12 @@ public class SqlEquipmentService implements EquipmentDataAccess {
 
     private final EquipmentRepository equipmentRepository;
     private final ItemRepository itemRepository;
+    private final InventoryService inventoryService;
 
-    public SqlEquipmentService(EquipmentRepository equipmentRepository, ItemRepository itemRepository) {
+    public SqlEquipmentService(EquipmentRepository equipmentRepository, ItemRepository itemRepository, InventoryService inventoryService) {
         this.equipmentRepository = equipmentRepository;
         this.itemRepository = itemRepository;
+        this.inventoryService = inventoryService;
     }
 
     @Override
@@ -39,9 +41,25 @@ public class SqlEquipmentService implements EquipmentDataAccess {
     @Override
     public EquipmentResponseDTO updateEquipment(Integer characterId, UpdateEquipmentRequestDTO request) {
         Equipment equipment = getEquipmentEntity(characterId);
-        equipment.setHead(resolveItem(request.getHeadItemId()));
-        equipment.setChest(resolveItem(request.getChestItemId()));
-        equipment.setLegs(resolveItem(request.getLegsItemId()));
+
+        if (request.getHeadItemId() != null &&
+                !request.getHeadItemId().equals(equipment.getHead().getId())) {
+            equipment.setHead(resolveItem(request.getHeadItemId()));
+            inventoryService.removeItem(characterId, request.getHeadItemId());
+        }
+
+        if (request.getChestItemId() != null &&
+                !request.getChestItemId().equals(equipment.getChest().getId())) {
+            equipment.setChest(resolveItem(request.getChestItemId()));
+            inventoryService.removeItem(characterId, request.getChestItemId());
+        }
+
+        if (request.getLegsItemId() != null &&
+                !request.getLegsItemId().equals(equipment.getLegs().getId())) {
+            equipment.setLegs(resolveItem(request.getLegsItemId()));
+            inventoryService.removeItem(characterId, request.getLegsItemId());
+        }
+
         return toDto(equipmentRepository.save(equipment));
     }
 

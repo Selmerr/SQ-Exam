@@ -24,11 +24,16 @@ public class InventoryService {
         this.inventoryHasItemRepository = inventoryHasItemRepository;
     }
 
-    public InventoryResponseDTO getInventoryData(Integer id) {
-        Inventory inventory = inventoryRepository.findById(id).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND));
-        List<Item> items = inventoryHasItemRepository.findByInventory_Id(id).stream().map((inventoryHasItem -> inventoryHasItem.getItem())).toList();
+    public InventoryResponseDTO getInventoryData(Integer itemId) {
+        Inventory inventory = inventoryRepository.findById(itemId).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND));
+        List<Item> items = inventoryHasItemRepository.findByInventory_Id(itemId).stream().map((inventoryHasItem -> inventoryHasItem.getItem())).toList();
         List<ItemResponseDTO> itemResponseDTOS = items.stream().map((item -> new ItemResponseDTO(item))).toList();
         InventoryResponseDTO response = new InventoryResponseDTO(inventory.getCharacter().getName(), itemResponseDTOS);
         return response;
+    }
+
+    public void removeItem(Integer characterId, Integer itemid) {
+        Inventory inventory = inventoryRepository.getReferenceById(characterId);
+        inventoryHasItemRepository.deleteByInventoryIdAndItemId(inventory.getId(), itemid);
     }
 }
