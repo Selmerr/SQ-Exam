@@ -5,7 +5,6 @@ import dk.ek.gruppe2.chooseyourfate.dto.CreateCharacterRequestDTO;
 import dk.ek.gruppe2.chooseyourfate.exception.ResourceNotFoundException;
 import dk.ek.gruppe2.chooseyourfate.interfaces.CharacterDataAccess;
 import dk.ek.gruppe2.chooseyourfate.model.mysql.CharacterAvatar;
-import dk.ek.gruppe2.chooseyourfate.repository.mysql.AccountRepository;
 import dk.ek.gruppe2.chooseyourfate.repository.mysql.ChapterRepository;
 import dk.ek.gruppe2.chooseyourfate.repository.mysql.CharacterAvatarRepository;
 import dk.ek.gruppe2.chooseyourfate.repository.mysql.RaceDetailsRepository;
