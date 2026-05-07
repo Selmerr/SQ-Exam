@@ -25,20 +25,17 @@ public class SqlCharacterService implements CharacterDataAccess {
     private EntityManager entityManager;
 
     private final CharacterAvatarRepository characterAvatarRepository;
-    private final AccountRepository accountRepository;
     private final ChapterRepository chapterRepository;
     private final SceneRepository sceneRepository;
     private final RaceDetailsRepository raceDetailsRepository;
 
     public SqlCharacterService(
             CharacterAvatarRepository characterAvatarRepository,
-            AccountRepository accountRepository,
             ChapterRepository chapterRepository,
             SceneRepository sceneRepository,
             RaceDetailsRepository raceDetailsRepository
     ) {
         this.characterAvatarRepository = characterAvatarRepository;
-        this.accountRepository = accountRepository;
         this.chapterRepository = chapterRepository;
         this.sceneRepository = sceneRepository;
         this.raceDetailsRepository = raceDetailsRepository;
@@ -113,10 +110,6 @@ public class SqlCharacterService implements CharacterDataAccess {
     // and avoids database-level foreign key violations. This method also enforces domain-specific consistency, such as
     // ensuring that the selected scene belongs to the selected chapter.
     private void validateCreateRequest(CreateCharacterRequestDTO request) {
-        if (!accountRepository.existsById(request.getAccountId())) {
-            throw new ResourceNotFoundException("Account not found with id: " + request.getAccountId());
-        }
-
         if (!chapterRepository.existsById(request.getChapterId())) {
             throw new ResourceNotFoundException("Chapter not found with id: " + request.getChapterId());
         }
