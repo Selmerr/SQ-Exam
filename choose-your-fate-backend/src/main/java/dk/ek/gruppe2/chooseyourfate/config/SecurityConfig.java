@@ -3,6 +3,7 @@ package dk.ek.gruppe2.chooseyourfate.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
@@ -34,17 +35,18 @@ public class SecurityConfig {
             })).sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/**").permitAll()
-                .requestMatchers("/swagger-ui/**").permitAll()
-                .requestMatchers("/v3/api-docs/**").permitAll()
-                .requestMatchers("/admin/**").hasRole("ADMIN")
-                .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
-                .requestMatchers("/choose-your-fate/chapter/**").hasAnyRole("USER", "ADMIN")
-                .requestMatchers("/choose-your-fate/scene/**").hasAnyRole("USER", "ADMIN")
-                .requestMatchers("/choose-your-fate/choice/**").hasAnyRole("USER", "ADMIN")
-                .requestMatchers("/choose-your-fate/inventories/**").authenticated()
-                .requestMatchers("/choose-your-fate/tts/test").permitAll()
-                .anyRequest().authenticated()
+                    //.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                    .requestMatchers("/auth/**").permitAll()
+                    .requestMatchers("/swagger-ui/**").permitAll()
+                    .requestMatchers("/v3/api-docs/**").permitAll()
+                    .requestMatchers("/admin/**").hasRole("ADMIN")
+                    .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
+                    .requestMatchers("/choose-your-fate/chapter/**").hasAnyRole("USER", "ADMIN")
+                    .requestMatchers("/choose-your-fate/scene/**").hasAnyRole("USER", "ADMIN")
+                    .requestMatchers("/choose-your-fate/choice/**").hasAnyRole("USER", "ADMIN")
+                    .requestMatchers("/choose-your-fate/inventories/**").authenticated()
+                    .requestMatchers("/choose-your-fate/tts/test").permitAll()
+                    .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
             .build();
