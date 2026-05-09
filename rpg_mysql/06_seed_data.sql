@@ -46,10 +46,12 @@ INSERT INTO chapter (id, name) VALUES
     (1, 'The Festival Gate'),
     (2, 'Moonlit Ruins');
 
-INSERT INTO race_details (id) VALUES
-    (1),
-    (2),
-    (3);
+INSERT INTO race_details (id, name) VALUES
+    (1, 'Bobs'),
+    (2, 'Bobiticus laviticus'),
+    (3, 'smalls'),
+    (4, 'TALLS'),
+    (5, 'MeDiUmS');
 
 INSERT INTO scene (id, chapter_id, name) VALUES
     (1, 1, 'Town Gate'),

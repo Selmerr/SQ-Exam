@@ -12,6 +12,8 @@ public class RaceDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    private String name;
+
     @OneToMany(mappedBy = "raceDetails")
     private List<CharacterAvatar> characters = new ArrayList<>();
 
@@ -28,4 +30,12 @@ public class RaceDetails {
 
     public List<Npc> getNpcs() { return npcs; }
     public void setNpcs(List<Npc> npcs) { this.npcs = npcs; }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

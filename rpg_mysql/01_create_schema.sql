@@ -48,6 +48,7 @@ DEFAULT CHARACTER SET = utf8mb3;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `choose_your_fate`.`race_details` (
   `id` INT NOT NULL AUTO_INCREMENT COMMENT 'BOB rules them all!',
+  `name` VARCHAR(100) NULL DEFAULT NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
