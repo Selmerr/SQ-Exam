@@ -3,7 +3,6 @@ package dk.ek.gruppe2.chooseyourfate.service.neo4j;
 import dk.ek.gruppe2.chooseyourfate.dto.CharacterResponseDTO;
 import dk.ek.gruppe2.chooseyourfate.dto.CreateCharacterRequestDTO;
 import dk.ek.gruppe2.chooseyourfate.interfaces.CharacterDataAccess;
-import dk.ek.gruppe2.chooseyourfate.model.mysql.CharacterAvatar;
 
 import org.springframework.stereotype.Service;
 
@@ -36,7 +35,7 @@ public class Neo4jCharacterService implements CharacterDataAccess {
     }
 
     @Override
-    public List<CharacterResponseDTO> getCharactersByAccountId(Integer id) {
+    public List<CharacterResponseDTO> getCharactersByAccountId(String id) {
         throw new UnsupportedOperationException(MESSAGE);
     }
 }

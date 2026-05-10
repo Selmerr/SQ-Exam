@@ -11,11 +11,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import dk.ek.gruppe2.chooseyourfate.enums.DataSourceType;
 import dk.ek.gruppe2.chooseyourfate.security.CustomUserDetails;
 import dk.ek.gruppe2.chooseyourfate.security.CustomUserDetailsService;
 import dk.ek.gruppe2.chooseyourfate.security.JwtUtil;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
@@ -50,7 +53,12 @@ public class JwtFilter extends OncePerRequestFilter {
                             user, null, user.getAuthorities());
 
 
-                    auth.setDetails(user.getId());
+                    Map<String, Object> extraInfo = new HashMap<>();
+                    extraInfo.put("sqlId", user.getId(DataSourceType.SQL));
+                    extraInfo.put("MongoId", user.getId(DataSourceType.MONGODB));
+                    extraInfo.put("NeoId", user.getId(DataSourceType.NEO4J));
+
+                    auth.setDetails(extraInfo);
 
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 }

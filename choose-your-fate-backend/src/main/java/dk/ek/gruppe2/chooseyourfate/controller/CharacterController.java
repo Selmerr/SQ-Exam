@@ -4,6 +4,7 @@ import dk.ek.gruppe2.chooseyourfate.dto.CharacterResponseDTO;
 import dk.ek.gruppe2.chooseyourfate.dto.CreateCharacterRequestDTO;
 import dk.ek.gruppe2.chooseyourfate.enums.DataSourceType;
 import dk.ek.gruppe2.chooseyourfate.service.CharacterService;
+import lombok.experimental.var;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/choose-your-fate/characters")
@@ -61,12 +63,18 @@ public class CharacterController {
     }
     
     @GetMapping("/all")
-    @PreAuthorize("hasRole('ADMIN') or @accountAuthorizationService.canModifyAccount(#id, authentication)")
     public List<CharacterResponseDTO> getCharactersByAccountId(
             @RequestHeader(value = DATA_SOURCE_HEADER, required = false) DataSourceType dataSource,
             Authentication auth
     ) {
-        Integer userId = (Integer) auth.getDetails(); 
-        return characterService.getCharactersByAccountId(dataSource, userId);
+        Map<String, Object> extraInfo =  (Map<String, Object>) auth.getDetails(); 
+
+        Object accountId = switch (dataSource) {
+            case SQL -> extraInfo.get("sqlId");
+            case MONGODB -> extraInfo.get("MongoId");
+            case NEO4J -> extraInfo.get("NeoId");
+        };
+
+        return characterService.getCharactersByAccountId(dataSource, accountId.toString());
     }
 }

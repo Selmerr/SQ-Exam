@@ -45,7 +45,7 @@ public class CharacterService {
         resolveDataAccess(sourceHeader).deleteCharacter(id);
     }
 
-    public List<CharacterResponseDTO> getCharactersByAccountId(DataSourceType sourceHeader, Integer id) {
+    public List<CharacterResponseDTO> getCharactersByAccountId(DataSourceType sourceHeader, String id) {
         return resolveDataAccess(sourceHeader).getCharactersByAccountId(id);
     }
 

@@ -2,7 +2,6 @@ package dk.ek.gruppe2.chooseyourfate.interfaces;
 
 import dk.ek.gruppe2.chooseyourfate.dto.CharacterResponseDTO;
 import dk.ek.gruppe2.chooseyourfate.dto.CreateCharacterRequestDTO;
-import dk.ek.gruppe2.chooseyourfate.model.mysql.CharacterAvatar;
 
 import java.util.List;
 
@@ -16,6 +15,6 @@ public interface CharacterDataAccess {
 
     void deleteCharacter(Integer id);
 
-    List<CharacterResponseDTO> getCharactersByAccountId(Integer id);
+    List<CharacterResponseDTO> getCharactersByAccountId(String id);
 
 }

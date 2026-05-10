@@ -89,9 +89,10 @@ public class SqlCharacterService implements CharacterDataAccess {
         storedProcedure.execute();
     }
 
+    //Made to retreive all characters connected to the account that is logged in.
     @Override
-    public List<CharacterResponseDTO> getCharactersByAccountId(Integer id) {
-        return getCharacterentitesByAccountId(id).stream()
+    public List<CharacterResponseDTO> getCharactersByAccountId(String id) {
+        return getCharacterentitesByAccountId(Integer.parseInt(id)).stream()
                 .map(this::toDto)
                 .toList();
     }
@@ -127,11 +128,11 @@ public class SqlCharacterService implements CharacterDataAccess {
 
     private CharacterResponseDTO toDto(CharacterAvatar character) {
         return new CharacterResponseDTO(
-                character.getId(),
-                character.getAccount().getId(),
-                character.getChapter().getId(),
-                character.getScene().getId(),
-                character.getRaceDetails().getId(),
+                character.getId().toString(),
+                character.getAccount().getId().toString(),
+                character.getChapter().getId().toString(),
+                character.getScene().getId().toString(),
+                character.getRaceDetails().getId().toString(),
                 character.getName(),
                 character.getFlag()
         );

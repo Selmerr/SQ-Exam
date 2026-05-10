@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import dk.ek.gruppe2.chooseyourfate.enums.DataSourceType;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
@@ -26,7 +27,9 @@ public class JwtUtil {
 
         return Jwts.builder()
                 .setSubject(user.getUsername())
-                .claim("userId", user.getId())
+                .claim("sqlId", user.getId(DataSourceType.SQL))
+                .claim("MongoId", user.getId(DataSourceType.MONGODB))
+                .claim("NeoId", user.getId(DataSourceType.NEO4J))
                 .claim("role", user.getAuthorities().iterator().next().getAuthority())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 86400000))
