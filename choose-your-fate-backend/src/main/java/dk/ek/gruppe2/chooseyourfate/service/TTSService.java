@@ -1,5 +1,6 @@
 package dk.ek.gruppe2.chooseyourfate.service;
 
+import dk.ek.gruppe2.chooseyourfate.exception.ResourceNotFoundException;
 import dk.ek.gruppe2.chooseyourfate.model.mysql.CharacterPath;
 import dk.ek.gruppe2.chooseyourfate.repository.mysql.CharacterPathRepository;
 import org.springframework.ai.audio.tts.TextToSpeechPrompt;
@@ -10,6 +11,8 @@ import org.springframework.ai.elevenlabs.api.ElevenLabsApi;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 @Service
 public class TTSService {
@@ -21,13 +24,14 @@ public class TTSService {
     }
 
     public byte[] textToSpeech(Integer characterId) {
-        CharacterPath characterPath = characterPathRepository.findByCharacter_Id(characterId);
-        if (characterPath.getAudioBlob() != null) {
+        CharacterPath characterPath = characterPathRepository.findByCharacter_Id(characterId).orElseThrow(() -> new ResourceNotFoundException("CharacterPath not found with characterId: " + characterId));
+        if (characterPath.getAudioBlob() != null && AudioUpdatedAfterSummary(characterPath.getSummary_updated_at(), characterPath.getAudio_blob_updated_at())) {
             return characterPath.getAudioBlob();
         }
         else {
             byte[] audioBlob = createAudioBlob(characterPath.getSummary());
             characterPath.setAudioBlob(audioBlob);
+            characterPath.setAudio_blob_updated_at(LocalDateTime.now());
             characterPathRepository.save(characterPath);
             return audioBlob;
         }
@@ -52,6 +56,10 @@ public class TTSService {
         TextToSpeechResponse response = elevenLabsTextToSpeechModel.call(speechPrompt);
 
         return response.getResult().getOutput();
+    }
+
+    public boolean AudioUpdatedAfterSummary(LocalDateTime summaryDate, LocalDateTime audioBlobDate) {
+        return audioBlobDate.isAfter(summaryDate);
     }
 
 }
