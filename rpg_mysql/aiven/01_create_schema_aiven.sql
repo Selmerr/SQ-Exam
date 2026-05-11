@@ -373,7 +373,7 @@ USE `defaultdb` ;
 -- -----------------------------------------------------
 -- View `defaultdb`.`v_character`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `defaultdb`.`v_character`;
+DROP VIEW IF EXISTS `defaultdb`.`v_character`;
 USE `defaultdb`;
 CREATE  OR REPLACE VIEW `v_character` AS (
     SELECT avatar.name, deets.intelligence, deets.charisma, deets.fashion, avatar.flag
