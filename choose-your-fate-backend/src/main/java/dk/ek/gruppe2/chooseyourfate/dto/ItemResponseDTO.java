@@ -12,14 +12,25 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ItemResponseDTO {
 
+    private Integer id;
     private String name;
     private String description;
     private String type;
 
     public ItemResponseDTO(Item item) {
+        this.id = item.getId();
         this.name = item.getName();
         this.description = item.getDescription();
         this.type = item.getType();
+    }
+
+    public Item toItem() {
+        Item item = new Item();
+        item.setId(id);
+        item.setName(name);
+        item.setDescription(description);
+        item.setType(type);
+        return item;
     }
 
 }

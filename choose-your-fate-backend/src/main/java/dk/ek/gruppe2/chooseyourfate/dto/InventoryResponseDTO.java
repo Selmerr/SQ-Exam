@@ -13,9 +13,12 @@ import java.util.List;
 @AllArgsConstructor
 public class InventoryResponseDTO {
 
+    private Integer inventoryId;
     private String characterName;
     private List<ItemResponseDTO> items;
 
-
-
+    public InventoryResponseDTO(String characterName, List<ItemResponseDTO> items) {
+        this.characterName = characterName;
+        this.items = items;
+    }
 }

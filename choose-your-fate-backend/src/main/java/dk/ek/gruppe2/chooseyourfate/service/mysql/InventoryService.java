@@ -3,6 +3,8 @@ package dk.ek.gruppe2.chooseyourfate.service.mysql;
 import dk.ek.gruppe2.chooseyourfate.dto.InventoryResponseDTO;
 import dk.ek.gruppe2.chooseyourfate.dto.ItemResponseDTO;
 import dk.ek.gruppe2.chooseyourfate.model.mysql.Inventory;
+import dk.ek.gruppe2.chooseyourfate.model.mysql.InventoryHasItem;
+import dk.ek.gruppe2.chooseyourfate.model.mysql.InventoryHasItemId;
 import dk.ek.gruppe2.chooseyourfate.model.mysql.Item;
 import dk.ek.gruppe2.chooseyourfate.repository.mysql.CharacterAvatarRepository;
 import dk.ek.gruppe2.chooseyourfate.repository.mysql.InventoryHasItemRepository;
@@ -24,16 +26,43 @@ public class InventoryService {
         this.inventoryHasItemRepository = inventoryHasItemRepository;
     }
 
-    public InventoryResponseDTO getInventoryData(Integer itemId) {
-        Inventory inventory = inventoryRepository.findById(itemId).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND));
-        List<Item> items = inventoryHasItemRepository.findByInventory_Id(itemId).stream().map((inventoryHasItem -> inventoryHasItem.getItem())).toList();
+    public InventoryResponseDTO getInventoryData(Integer inventoryId) {
+        Inventory inventory = inventoryRepository.findById(inventoryId).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND));
+        List<Item> items = inventoryHasItemRepository.findByInventory_Id(inventoryId).stream().map((inventoryHasItem -> inventoryHasItem.getItem())).toList();
         List<ItemResponseDTO> itemResponseDTOS = items.stream().map((item -> new ItemResponseDTO(item))).toList();
         InventoryResponseDTO response = new InventoryResponseDTO(inventory.getCharacter().getName(), itemResponseDTOS);
         return response;
     }
 
-    public void removeItem(Integer characterId, Integer itemid) {
-        Inventory inventory = inventoryRepository.getReferenceById(characterId);
-        inventoryHasItemRepository.deleteByInventoryIdAndItemId(inventory.getId(), itemid);
+    public InventoryResponseDTO getInventoryByCharacterId(Integer characterId) {
+        Inventory inventory = inventoryRepository.findByCharacter_Id(characterId);
+        return toDTO(inventory);
+    }
+
+    public void removeItem(Integer inventoryId, Integer itemId) {
+        inventoryHasItemRepository.deleteByInventoryIdAndItemId(inventoryId, itemId);
+    }
+
+    public void addItemToInventory(Integer inventoryId, Integer itemId) {
+        inventoryHasItemRepository.addByInventoryIdAndItemId(inventoryId, itemId);
+    }
+
+    private InventoryResponseDTO toDTO(Inventory inventory) {
+        InventoryResponseDTO dto = new InventoryResponseDTO();
+        dto.setInventoryId(inventory.getId());
+        return dto;
+    }
+
+    public void useItem(Integer inventoryId, Integer itemId) {
+        InventoryHasItem inventoryHasItem = inventoryHasItemRepository
+                .findById(new InventoryHasItemId(itemId, inventoryId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        if (inventoryHasItem.getAmount() > 1) {
+            inventoryHasItem.setAmount(inventoryHasItem.getAmount() - 1);
+            inventoryHasItemRepository.save(inventoryHasItem);
+        } else {
+            inventoryHasItemRepository.delete(inventoryHasItem);
+        }
     }
 }
