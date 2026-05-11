@@ -1,5 +1,6 @@
 package dk.ek.gruppe2.chooseyourfate.repository.neo4j;
 
+import jakarta.annotation.PostConstruct;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.stereotype.Repository;
 
@@ -13,6 +14,30 @@ public class AccountNodeRepositoryImpl implements AccountNodeRepository {
 
     public AccountNodeRepositoryImpl(Neo4jClient neo4jClient) {
         this.neo4jClient = neo4jClient;
+    }
+
+    @PostConstruct
+    void ensureConstraints() {
+        neo4jClient.query("""
+                        CREATE CONSTRAINT account_id IF NOT EXISTS
+                        FOR (a:Account)
+                        REQUIRE a.id IS UNIQUE
+                        """)
+                .run();
+
+        neo4jClient.query("""
+                        CREATE CONSTRAINT account_username_unique IF NOT EXISTS
+                        FOR (a:Account)
+                        REQUIRE a.username IS UNIQUE
+                        """)
+                .run();
+
+        neo4jClient.query("""
+                        CREATE CONSTRAINT account_email_unique IF NOT EXISTS
+                        FOR (a:Account)
+                        REQUIRE a.email IS UNIQUE
+                        """)
+                .run();
     }
 
     @Override
@@ -104,8 +129,13 @@ public class AccountNodeRepositoryImpl implements AccountNodeRepository {
     @Override
     public Integer findNextId() {
         return neo4jClient.query("""
-                        MATCH (a:Account)
-                        RETURN coalesce(max(a.id), 0) + 1 AS nextId
+                        OPTIONAL MATCH (a:Account)
+                        WITH coalesce(max(a.id), 0) AS maxExistingId
+                        MERGE (counter:Counter {name: 'account'})
+                        ON CREATE SET counter.value = maxExistingId
+                        WITH counter
+                        SET counter.value = counter.value + 1
+                        RETURN counter.value AS nextId
                         """)
                 .fetchAs(Integer.class)
                 .mappedBy((typeSystem, nextIdRecord) -> nextIdRecord.get("nextId").asInt())

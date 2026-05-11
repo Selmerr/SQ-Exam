@@ -11,6 +11,7 @@ import dk.ek.gruppe2.chooseyourfate.repository.neo4j.AccountNodeRepository;
 import dk.ek.gruppe2.chooseyourfate.repository.neo4j.AccountNodeRepository.AccountSnapshot;
 import dk.ek.gruppe2.chooseyourfate.repository.neo4j.AccountNodeRepository.CreateAccountData;
 import dk.ek.gruppe2.chooseyourfate.repository.neo4j.AccountNodeRepository.UpdateAccountData;
+import org.neo4j.driver.exceptions.ClientException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -52,16 +53,20 @@ public class Neo4jAccountService implements AccountDataAccess {
         String encodedPassword = encoder.encode(request.getPassword());
         String role = request.toEntity().getRole().name();
 
-        return accountRepository.createAccount(new CreateAccountData(
-                        nextId,
-                        request.getUsername(),
-                        request.getEmail(),
-                        3,
-                        encodedPassword,
-                        role
-                ))
-                .map(this::toDto)
-                .orElseThrow(() -> new IllegalStateException("Failed to create account"));
+        try {
+            return accountRepository.createAccount(new CreateAccountData(
+                            nextId,
+                            request.getUsername(),
+                            request.getEmail(),
+                            3,
+                            encodedPassword,
+                            role
+                    ))
+                    .map(this::toDto)
+                    .orElseThrow(() -> new IllegalStateException("Failed to create account"));
+        } catch (RuntimeException ex) {
+            throw translateDuplicateConstraint(ex);
+        }
     }
 
     @Override
@@ -92,9 +97,13 @@ public class Neo4jAccountService implements AccountDataAccess {
             password = encoder.encode(request.getPassword());
         }
 
-        return accountRepository.updateAccount(new UpdateAccountData(id, username, email, characterLimit, password))
-                .map(this::toDto)
-                .orElseThrow(() -> new ResourceNotFoundException("Account not found with id: " + id));
+        try {
+            return accountRepository.updateAccount(new UpdateAccountData(id, username, email, characterLimit, password))
+                    .map(this::toDto)
+                    .orElseThrow(() -> new ResourceNotFoundException("Account not found with id: " + id));
+        } catch (RuntimeException ex) {
+            throw translateDuplicateConstraint(ex);
+        }
     }
 
     @Override
@@ -129,5 +138,46 @@ public class Neo4jAccountService implements AccountDataAccess {
                 accountData.characterLimit(),
                 accountData.email()
         );
+    }
+
+    private RuntimeException translateDuplicateConstraint(RuntimeException ex) {
+        if (isUniqueConstraintViolation(ex, "username")) {
+            return new DuplicateResourceException("Username already exists");
+        }
+
+        if (isUniqueConstraintViolation(ex, "email")) {
+            return new DuplicateResourceException("Email already exists");
+        }
+
+        return ex;
+    }
+
+    private boolean isUniqueConstraintViolation(Throwable throwable, String propertyName) {
+        Throwable current = throwable;
+        while (current != null) {
+            if (current instanceof ClientException clientException) {
+                String code = clientException.code();
+                String message = clientException.getMessage();
+                if (code != null
+                        && code.contains("ConstraintValidationFailed")
+                        && message != null
+                        && message.toLowerCase().contains(propertyName.toLowerCase())) {
+                    return true;
+                }
+            }
+
+            String message = current.getMessage();
+            if (message != null) {
+                String lowerMessage = message.toLowerCase();
+                if (lowerMessage.contains("constraint")
+                        && lowerMessage.contains(propertyName.toLowerCase())
+                        && (lowerMessage.contains("unique") || lowerMessage.contains("already exists"))) {
+                    return true;
+                }
+            }
+
+            current = current.getCause();
+        }
+        return false;
     }
 }
