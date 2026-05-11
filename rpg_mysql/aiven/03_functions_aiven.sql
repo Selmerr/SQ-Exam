@@ -7,8 +7,13 @@ CREATE FUNCTION `fn_is_quest_complete`(p_character_id INT, p_quest_id INT) RETUR
     DETERMINISTIC
 BEGIN
 DECLARE v_quest_status BOOLEAN;
-SELECT `status` INTO v_quest_status 
-FROM character_has_quest WHERE p_character_id = character_id AND p_quest_id = quest_id;
+SELECT EXISTS (
+    SELECT 1
+    FROM character_has_quest
+    WHERE character_id = p_character_id
+      AND quest_id = p_quest_id
+      AND `status` = 1
+) INTO v_quest_status;
 RETURN v_quest_status;
 END$$
 
