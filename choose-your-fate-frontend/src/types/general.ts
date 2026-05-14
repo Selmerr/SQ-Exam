@@ -3,24 +3,24 @@ export type User = {
 };
 
 export type Scene = {
-  id: number;
+  id: string;
   dialog: string[];
   img: string;
   choices: Choice[];
 };
 
 export type Choice = {
-    id: number
+    id: string
     name: string
-    destination_id: number    
+    destination_id: string    
 };
 
 export type Character = {
-  id: number;
-  accountId: number;
-  chapterId: number;
-  sceneId: number;
-  raceDetailsId: number;
+  id: string;
+  accountId: string;
+  chapterId: string;
+  sceneId: string;
+  raceDetailsId: string;
   name: string;
   flag: {};
 };
@@ -39,11 +39,11 @@ export type CharacterListProps = {
 }
 
 export type InventoryItem = {
-  id: number;
+  id: string;
   name: string;
 };
 
 export type EquipmentItem = {
-  id: number;
+  id: string;
   name: string;
 };
