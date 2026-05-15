@@ -293,7 +293,7 @@ public class Neo4jMigrationService {
         }
 
         for (RaceDetails detail : raceDetails) {
-            tx.run("MERGE (r:RaceDetails {id: $id})", params("id", detail.getId())).consume();
+            tx.run("MERGE (r:RaceDetails {id: $id}) SET r.name = $name", params("id", detail.getId(), "name", detail.getName())).consume();
         }
 
         for (Npc npc : npcs) {

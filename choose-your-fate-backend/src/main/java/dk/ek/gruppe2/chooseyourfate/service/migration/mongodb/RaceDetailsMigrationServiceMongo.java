@@ -26,7 +26,7 @@ public class RaceDetailsMigrationServiceMongo {
         List<RaceDetails> entities = mysqlRepo.findAll();
 
         for (RaceDetails entity : entities) {
-            RaceDetailsDocumentMongo doc = RaceDetailsDocumentMongo.builder().build();
+            RaceDetailsDocumentMongo doc = RaceDetailsDocumentMongo.builder().name(entity.getName()).build();
 
             mongoRepo.save(doc);
 
