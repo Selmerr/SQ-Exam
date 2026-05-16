@@ -35,11 +35,13 @@ public class MigrationRunner {
         raceDetailsMigrationService.migrate();      // no dependencies
         itemMigrationService.migrate();             // no dependencies
         chapterMigrationService.migrate();          // no dependencies
+        raceDetailsMigrationService.migrate();      // depends on chapter
         accountMigrationService.migrate();          // no dependencies
         npcMigrationService.migrate();              // depends on race_details
         sceneMigrationService.migrateFirstPass();   // depends on chapters, npcs
         questMigrationService.migrate();            // depends on scenes
         sceneMigrationService.migrateSecondPass();  // depends on quests
+        chapterMigrationService.migrateSecondPass();// depends on scenes
         characterMigrationService.migrate();        // depends on everything
 
         log.info("Full migration complete!");
