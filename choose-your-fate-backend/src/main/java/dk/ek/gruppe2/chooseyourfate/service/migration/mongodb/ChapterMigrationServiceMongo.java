@@ -1,9 +1,7 @@
 package dk.ek.gruppe2.chooseyourfate.service.migration.mongodb;
 
 import dk.ek.gruppe2.chooseyourfate.model.mongodb.ChapterDocumentMongo;
-import dk.ek.gruppe2.chooseyourfate.model.mongodb.ChoiceMongo;
 import dk.ek.gruppe2.chooseyourfate.model.mysql.Chapter;
-import dk.ek.gruppe2.chooseyourfate.model.mysql.Scene;
 import dk.ek.gruppe2.chooseyourfate.repository.mongodb.ChapterRepositoryMongo;
 import dk.ek.gruppe2.chooseyourfate.repository.mysql.ChapterRepository;
 import dk.ek.gruppe2.chooseyourfate.service.migration.IdMappingService;
