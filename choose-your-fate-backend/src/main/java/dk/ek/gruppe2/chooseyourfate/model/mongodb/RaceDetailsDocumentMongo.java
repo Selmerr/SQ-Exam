@@ -16,4 +16,5 @@ public class RaceDetailsDocumentMongo {
 
     @Id
     private String id;
+    private String name;
 }
