@@ -1,7 +1,9 @@
 package dk.ek.gruppe2.chooseyourfate.service.migration.mongodb;
 
 import dk.ek.gruppe2.chooseyourfate.model.mongodb.ChapterDocumentMongo;
+import dk.ek.gruppe2.chooseyourfate.model.mongodb.ChoiceMongo;
 import dk.ek.gruppe2.chooseyourfate.model.mysql.Chapter;
+import dk.ek.gruppe2.chooseyourfate.model.mysql.Scene;
 import dk.ek.gruppe2.chooseyourfate.repository.mongodb.ChapterRepositoryMongo;
 import dk.ek.gruppe2.chooseyourfate.repository.mysql.ChapterRepository;
 import dk.ek.gruppe2.chooseyourfate.service.migration.IdMappingService;
@@ -40,5 +42,29 @@ public class ChapterMigrationServiceMongo {
         }
 
         log.info("Migrated {} chapters", entities.size());
+    }
+
+    // SECOND PASS — resolve StartingSceneId
+    // All scenes now exist in MongoDB so we can resolve all references
+    public void migrateSecondPass() {
+        log.info("Starting Scene migration (second pass)...");
+
+        List<Chapter> entities = mysqlRepo.findAll();
+
+        for (Chapter entity : entities) {
+
+            // fetch the chapter document we saved in first pass
+            String mongoChapterId = idMappingService.get(CollectionNames.CHAPTERS, entity.getId());
+            ChapterDocumentMongo doc = mongoRepo.findById(mongoChapterId).orElseThrow();
+
+            doc.setStartingSceneId(idMappingService.get(
+                                    CollectionNames.SCENES,
+                                    entity.getStartingScene().getId()
+                            ));
+
+            mongoRepo.save(doc);
+        }
+
+        log.info("Updated {} scenes (second pass)", entities.size());
     }
 }
