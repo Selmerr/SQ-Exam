@@ -1,6 +1,5 @@
 package dk.ek.gruppe2.chooseyourfate.service;
 
-import dk.ek.gruppe2.chooseyourfate.datasource.DataSourceResolver;
 import dk.ek.gruppe2.chooseyourfate.dto.CharacterResponseDTO;
 import dk.ek.gruppe2.chooseyourfate.dto.CreateCharacterRequestDTO;
 import dk.ek.gruppe2.chooseyourfate.enums.DataSourceType;
@@ -13,35 +12,36 @@ import java.util.List;
 @Service
 public class CharacterService {
 
-    private final DataSourceResolver dataSourceResolver;
     private final SqlCharacterService sqlCharacterService;
 
     public CharacterService(
-            DataSourceResolver dataSourceResolver,
             SqlCharacterService sqlCharacterService
     ) {
-        this.dataSourceResolver = dataSourceResolver;
         this.sqlCharacterService = sqlCharacterService;
     }
 
-    public List<CharacterResponseDTO> getAllCharacters(String sourceHeader) {
+    public List<CharacterResponseDTO> getAllCharacters(DataSourceType sourceHeader) {
         return resolveDataAccess(sourceHeader).getAllCharacters();
     }
 
-    public CharacterResponseDTO getCharacterById(String sourceHeader, Integer id) {
-        return resolveDataAccess(sourceHeader).getCharacterById(id);
+    public CharacterResponseDTO getCharacterById(DataSourceType sourceHeader, String id) {
+        return resolveDataAccess(sourceHeader).getCharacterById(Integer.parseInt(id));
     }
 
-    public CharacterResponseDTO createCharacter(String sourceHeader, CreateCharacterRequestDTO request) {
+    public CharacterResponseDTO createCharacter(DataSourceType sourceHeader, CreateCharacterRequestDTO request) {
         return resolveDataAccess(sourceHeader).createCharacter(request);
     }
 
-    public void deleteCharacter(String sourceHeader, Integer id) {
-        resolveDataAccess(sourceHeader).deleteCharacter(id);
+    public void deleteCharacter(DataSourceType sourceHeader, String id) {
+        resolveDataAccess(sourceHeader).deleteCharacter(Integer.parseInt(id));
     }
 
-    private CharacterDataAccess resolveDataAccess(String sourceHeader) {
-        DataSourceType dataSourceType = dataSourceResolver.resolve(sourceHeader);
+    public List<CharacterResponseDTO> getCharactersByAccountId(DataSourceType sourceHeader, String id) {
+        return resolveDataAccess(sourceHeader).getCharactersByAccountId(Integer.parseInt(id));
+    }
+
+    private CharacterDataAccess<Integer> resolveDataAccess(DataSourceType sourceHeader) {
+        DataSourceType dataSourceType = sourceHeader == null ? DataSourceType.SQL : sourceHeader;
         return switch (dataSourceType) {
             case SQL -> sqlCharacterService;
         };
