@@ -27,7 +27,7 @@ public class LoadoutController {
         return loadoutService.getLoadoutByCharacterId(dataSource, characterId);
     }
 
-    @GetMapping("/{characterId}/unequip/{itemId}")
+    @PostMapping("/{characterId}/unequip/{itemId}")
     @PreAuthorize("hasRole('ADMIN') or @characterAuthorizationService.canAccessCharacter(#characterId, authentication)")
     public LoadoutResponseDTO unequipItem(
             @RequestHeader(value = DATA_SOURCE_HEADER, required = false) DataSourceType dataSource,
@@ -37,7 +37,7 @@ public class LoadoutController {
         return loadoutService.unequipItem(dataSource, characterId, itemId);
     }
 
-    @GetMapping("/{characterId}/equip/{itemId}")
+    @PostMapping("/{characterId}/equip/{itemId}")
     @PreAuthorize("hasRole('ADMIN') or @characterAuthorizationService.canAccessCharacter(#characterId, authentication)")
     public LoadoutResponseDTO equipItem(
             @RequestHeader(value = DATA_SOURCE_HEADER, required = false) DataSourceType dataSource,
