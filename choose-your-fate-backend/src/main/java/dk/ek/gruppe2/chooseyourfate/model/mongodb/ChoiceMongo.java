@@ -17,7 +17,6 @@ public class ChoiceMongo {
     @Id
     private String id;
     private String description;
-    private String sceneId;
     private String destinationId;
     private String consequence;
     private Integer targetId;
@@ -25,4 +24,5 @@ public class ChoiceMongo {
     private short storyWeight;
     private String requirements;
     private List<String> itemIds = new ArrayList<>();
+    private SceneDocumentMongo destinationScene;
 }

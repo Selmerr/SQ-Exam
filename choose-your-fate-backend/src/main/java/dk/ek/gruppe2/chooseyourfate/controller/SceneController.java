@@ -1,7 +1,9 @@
 package dk.ek.gruppe2.chooseyourfate.controller;
 
 import java.util.List;
+import java.util.Optional;
 
+import dk.ek.gruppe2.chooseyourfate.model.mongodb.SceneDocumentMongo;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -72,5 +74,13 @@ public class SceneController {
             @PathVariable Integer id
     ) {
         sceneService.deleteScene(dataSource, id);
+    }
+
+    @GetMapping("/{id}/next")
+    public Optional<SceneDocumentMongo> getSceneWithNextScene(
+            @RequestHeader(value = DATA_SOURCE_HEADER, required = false) DataSourceType dataSource,
+            @PathVariable String id
+    ) {
+        return sceneService.getSceneWithNextScene(dataSource, id);
     }
 }

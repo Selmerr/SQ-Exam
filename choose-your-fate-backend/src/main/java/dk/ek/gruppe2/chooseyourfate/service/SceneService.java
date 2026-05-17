@@ -1,7 +1,10 @@
 package dk.ek.gruppe2.chooseyourfate.service;
 
 import java.util.List;
+import java.util.Optional;
 
+import dk.ek.gruppe2.chooseyourfate.model.mongodb.SceneDocumentMongo;
+import dk.ek.gruppe2.chooseyourfate.service.mongodb.MongoSceneService;
 import org.springframework.stereotype.Service;
 
 import dk.ek.gruppe2.chooseyourfate.dto.scene.CreateSceneRequestDTO;
@@ -15,16 +18,16 @@ import dk.ek.gruppe2.chooseyourfate.service.mysql.SqlSceneService;
 public class SceneService {
     private final SqlSceneService sqlSceneService;
     //private final Neo4jSceneService neo4jSceneService;
-    //private final MongoSceneService mongoSceneService;
+    private final MongoSceneService mongoSceneService;
 
     public SceneService(
-            SqlSceneService sqlSceneService
+            SqlSceneService sqlSceneService,
             //Neo4jSceneervice neo4jSceneService,
-            //MongoSceneService mongoSceneService
+            MongoSceneService mongoSceneService
     ) {
         this.sqlSceneService = sqlSceneService;
         //this.neo4jSceneService = neo4jSceneService;
-        //this.mongoSceneService = mongoSceneService;
+        this.mongoSceneService = mongoSceneService;
     }
 
     public List<SceneResponseDTO> getAllScenes(DataSourceType source) {
@@ -51,11 +54,15 @@ public class SceneService {
         return sqlSceneService.createScene(request);
     }
 
+    public Optional<SceneDocumentMongo> getSceneWithNextScene(DataSourceType source, String id) {
+        return mongoSceneService.getSceneWithNextScene(id);
+    }
+
     private SceneDataAccess resolveDataService(DataSourceType source) {
         return switch (source) {
             case SQL -> sqlSceneService;
             //case NEO4J -> neo4jSceneService;
-            //case MONGODB -> mongoSceneservice;
+            case MONGODB -> mongoSceneService;
             default -> throw new IllegalArgumentException("Unexpected value: " + source);
         };
     }
