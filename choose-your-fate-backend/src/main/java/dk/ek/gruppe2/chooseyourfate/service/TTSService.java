@@ -1,5 +1,6 @@
 package dk.ek.gruppe2.chooseyourfate.service;
 
+import dk.ek.gruppe2.chooseyourfate.exception.ResourceNotFoundException;
 import dk.ek.gruppe2.chooseyourfate.model.mysql.CharacterPath;
 import dk.ek.gruppe2.chooseyourfate.repository.mysql.CharacterPathRepository;
 import org.springframework.ai.audio.tts.TextToSpeechPrompt;
@@ -7,9 +8,7 @@ import org.springframework.ai.audio.tts.TextToSpeechResponse;
 import org.springframework.ai.elevenlabs.ElevenLabsTextToSpeechModel;
 import org.springframework.ai.elevenlabs.ElevenLabsTextToSpeechOptions;
 import org.springframework.ai.elevenlabs.api.ElevenLabsApi;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 
@@ -25,7 +24,7 @@ public class TTSService {
     public byte[] textToSpeech(Integer characterId) {
         CharacterPath characterPath = characterPathRepository.findByCharacter_Id(characterId);
         if (characterPath == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Character path not found for character id: " + characterId);
+            throw new ResourceNotFoundException("Character path not found for character id: " + characterId);
         }
         if (characterPath.getAudioBlob() != null && isAudioUpdatedAfterSummary(characterPath.getSummary_updated_at(), characterPath.getAudio_blob_updated_at())) {
             return characterPath.getAudioBlob();
