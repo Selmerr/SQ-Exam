@@ -26,13 +26,13 @@ public class TTSService {
         if (characterPath == null) {
             throw new ResourceNotFoundException("Character path not found for character id: " + characterId);
         }
-        if (characterPath.getAudioBlob() != null && isAudioUpdatedAfterSummary(characterPath.getSummary_updated_at(), characterPath.getAudio_blob_updated_at())) {
+        if (characterPath.getAudioBlob() != null && isAudioUpdatedAfterSummary(characterPath.getSummaryUpdatedAt(), characterPath.getAudioBlobUpdatedAt())) {
             return characterPath.getAudioBlob();
         }
         else {
             byte[] audioBlob = createAudioBlob(characterPath.getSummary());
             characterPath.setAudioBlob(audioBlob);
-            characterPath.setAudio_blob_updated_at(LocalDateTime.now());
+            characterPath.setAudioBlobUpdatedAt(LocalDateTime.now());
             characterPathRepository.save(characterPath);
             return audioBlob;
         }
