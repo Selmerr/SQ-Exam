@@ -35,19 +35,20 @@ public class SqlCharacterService implements CharacterDataAccess<Integer> {
     private final ChapterRepository chapterRepository;
     private final SceneRepository sceneRepository;
     private final RaceDetailsRepository raceDetailsRepository;
+    private final CharacterDetailsRepository characterDetailsRepository;
 
     public SqlCharacterService(
             CharacterAvatarRepository characterAvatarRepository,
             CharacterDetailsRepository characterDetailsRepository,
-            AccountRepository accountRepository,
             ChapterRepository chapterRepository,
             SceneRepository sceneRepository,
             RaceDetailsRepository raceDetailsRepository
     ) {
         this.characterAvatarRepository = characterAvatarRepository;
         this.characterDetailsRepository = characterDetailsRepository;
-        this.accountRepository = accountRepository;
         this.chapterRepository = chapterRepository;
+        this.sceneRepository = sceneRepository;
+        this.raceDetailsRepository = raceDetailsRepository;
     }
 
     @Override
@@ -193,7 +194,7 @@ public class SqlCharacterService implements CharacterDataAccess<Integer> {
                 character.getChapter().getId(),
                 character.getChapter().getName(),
                 character.getRaceDetails().getId(),
-                getRaceDisplayName(character),
+                character.getRaceDetails().getName(),
                 new CharacterStatsDTO(
                         details.getIntelligence(),
                         details.getCharisma(),
@@ -201,10 +202,5 @@ public class SqlCharacterService implements CharacterDataAccess<Integer> {
                 ),
                 canCreateMoreCharacters
         );
-    }
-
-    // Gives race_details a display label until the SQL schema stores real race names.
-    private String getRaceDisplayName(CharacterAvatar character) {
-        return "Race " + character.getRaceDetails().getId();
     }
 }
