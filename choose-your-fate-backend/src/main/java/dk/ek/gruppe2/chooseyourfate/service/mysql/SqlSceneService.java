@@ -1,5 +1,6 @@
 package dk.ek.gruppe2.chooseyourfate.service.mysql;
 
+import dk.ek.gruppe2.chooseyourfate.dto.scene.SceneLookaheadResponseDTO;
 import dk.ek.gruppe2.chooseyourfate.dto.scene.SceneResponseDTO;
 
 import java.util.List;
@@ -36,8 +37,8 @@ public class SqlSceneService implements SceneDataAccess {
 
     @Override
     // Returns one SQL scene with the choices and destination scenes already loaded.
-    public SceneResponseDTO getSceneById(Integer id) {
-        return new SceneResponseDTO(getSceneEntity(id));
+    public SceneLookaheadResponseDTO getSceneById(Integer id) {
+        return new SceneLookaheadResponseDTO(getSceneEntity(id));
     }
 
     @Override
