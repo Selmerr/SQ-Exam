@@ -6,9 +6,12 @@ import dk.ek.gruppe2.chooseyourfate.dto.CharacterViewResponseDTO;
 import dk.ek.gruppe2.chooseyourfate.dto.CreateCharacterRequestDTO;
 import dk.ek.gruppe2.chooseyourfate.exception.ResourceNotFoundException;
 import dk.ek.gruppe2.chooseyourfate.interfaces.CharacterDataAccess;
+import dk.ek.gruppe2.chooseyourfate.model.mysql.Chapter;
 import dk.ek.gruppe2.chooseyourfate.model.mysql.CharacterAvatar;
 import dk.ek.gruppe2.chooseyourfate.model.mysql.CharacterDetails;
 import dk.ek.gruppe2.chooseyourfate.repository.mysql.AccountRepository;
+import dk.ek.gruppe2.chooseyourfate.model.mysql.RaceDetails;
+import dk.ek.gruppe2.chooseyourfate.model.mysql.Scene;
 import dk.ek.gruppe2.chooseyourfate.repository.mysql.ChapterRepository;
 import dk.ek.gruppe2.chooseyourfate.repository.mysql.CharacterAvatarRepository;
 import dk.ek.gruppe2.chooseyourfate.repository.mysql.CharacterDetailsRepository;
@@ -23,14 +26,12 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class SqlCharacterService implements CharacterDataAccess {
+public class SqlCharacterService implements CharacterDataAccess<Integer> {
 
     @PersistenceContext
     private EntityManager entityManager;
 
     private final CharacterAvatarRepository characterAvatarRepository;
-    private final CharacterDetailsRepository characterDetailsRepository;
-    private final AccountRepository accountRepository;
     private final ChapterRepository chapterRepository;
     private final SceneRepository sceneRepository;
     private final RaceDetailsRepository raceDetailsRepository;
@@ -47,8 +48,6 @@ public class SqlCharacterService implements CharacterDataAccess {
         this.characterDetailsRepository = characterDetailsRepository;
         this.accountRepository = accountRepository;
         this.chapterRepository = chapterRepository;
-        this.sceneRepository = sceneRepository;
-        this.raceDetailsRepository = raceDetailsRepository;
     }
 
     @Override
@@ -76,6 +75,24 @@ public class SqlCharacterService implements CharacterDataAccess {
 
     @Override
     public CharacterResponseDTO createCharacter(CreateCharacterRequestDTO request) {
+        if (request.getChapterId() == null || request.getSceneId() == null) {
+            RaceDetails raceDetails = raceDetailsRepository.findById(request.getRaceDetailsId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Race details not found with id: " + request.getRaceDetailsId()));
+
+            Chapter startingChapter = raceDetails.getStartingChapter();
+            if (startingChapter == null) {
+                throw new ResourceNotFoundException("Starting chapter not configured for race details with id: " + request.getRaceDetailsId());
+            }
+
+            Scene startingScene = startingChapter.getStartingScene();
+            if (startingScene == null) {
+                throw new ResourceNotFoundException("Starting scene not configured for race details with id: " + request.getRaceDetailsId());
+            }
+
+            request.setChapterId(startingChapter.getId());
+            request.setSceneId(startingScene.getId());
+        }
+
         validateCreateRequest(request);
 
         StoredProcedureQuery storedProcedure = entityManager.createStoredProcedureQuery("sp_create_character");
@@ -110,6 +127,18 @@ public class SqlCharacterService implements CharacterDataAccess {
         storedProcedure.execute();
     }
 
+    //Made to retreive all characters connected to the account that is logged in.
+    @Override
+    public List<CharacterResponseDTO> getCharactersByAccountId(Integer id) {
+        return getCharacterentitesByAccountId(id).stream()
+                .map(this::toDto)
+                .toList();
+    }
+
+    private List<CharacterAvatar> getCharacterentitesByAccountId(Integer id) {
+        return characterAvatarRepository.findByAccount_Id(id);
+    }
+
     private CharacterAvatar getCharacterEntity(Integer id) {
         return characterAvatarRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Character not found with id: " + id));
@@ -123,10 +152,6 @@ public class SqlCharacterService implements CharacterDataAccess {
 
     // Validates referenced entities before insert and checks that the selected scene belongs to the selected chapter.
     private void validateCreateRequest(CreateCharacterRequestDTO request) {
-        if (!accountRepository.existsById(request.getAccountId())) {
-            throw new ResourceNotFoundException("Account not found with id: " + request.getAccountId());
-        }
-
         if (!chapterRepository.existsById(request.getChapterId())) {
             throw new ResourceNotFoundException("Chapter not found with id: " + request.getChapterId());
         }
@@ -146,11 +171,11 @@ public class SqlCharacterService implements CharacterDataAccess {
     // Maps the SQL character entity to the normal character response.
     private CharacterResponseDTO toDto(CharacterAvatar character) {
         return new CharacterResponseDTO(
-                character.getId(),
-                character.getAccount().getId(),
-                character.getChapter().getId(),
-                character.getScene().getId(),
-                character.getRaceDetails().getId(),
+                character.getId().toString(),
+                character.getAccount().getId().toString(),
+                character.getChapter().getId().toString(),
+                character.getScene().getId().toString(),
+                character.getRaceDetails().getId().toString(),
                 character.getName(),
                 character.getFlag()
         );
