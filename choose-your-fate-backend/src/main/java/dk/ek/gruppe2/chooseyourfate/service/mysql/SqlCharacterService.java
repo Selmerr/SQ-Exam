@@ -65,6 +65,7 @@ public class SqlCharacterService implements CharacterDataAccess<Integer> {
     }
 
     // Builds one SQL-backed character view so the frontend does not need separate character and detail requests.
+    @Override
     public CharacterViewResponseDTO getCharacterViewById(Integer id) {
         CharacterDetails details = getCharacterDetailsEntity(id);
         CharacterAvatar character = details.getCharacter();

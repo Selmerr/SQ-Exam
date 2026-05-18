@@ -48,7 +48,7 @@ public class CharacterController {
     @GetMapping("/{id}/view")
     @PreAuthorize("hasRole('ADMIN') or @characterAuthorizationService.canAccessCharacter(#id, authentication)")
     public CharacterViewResponseDTO getCharacterViewById(
-            @RequestHeader(value = DATA_SOURCE_HEADER, required = false) String dataSource,
+            @RequestHeader(value = DATA_SOURCE_HEADER, required = false) DataSourceType dataSource,
             @PathVariable Integer id
     ) {
         return characterService.getCharacterViewById(dataSource, id);

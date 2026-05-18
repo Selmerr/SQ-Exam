@@ -38,13 +38,8 @@ public class CharacterService {
     }
 
     // Returns the combined character view; currently implemented for SQL because MongoDB and Neo4j character services are not implemented yet.
-    public CharacterViewResponseDTO getCharacterViewById(String sourceHeader, Integer id) {
-        DataSourceType dataSourceType = dataSourceResolver.resolve(sourceHeader);
-        return switch (dataSourceType) {
-            case SQL -> sqlCharacterService.getCharacterViewById(id);
-            case NEO4J -> throw new UnsupportedOperationException("Neo4j character view is not implemented yet");
-            case MONGODB -> throw new UnsupportedOperationException("MongoDB character view is not implemented yet");
-        };
+    public CharacterViewResponseDTO getCharacterViewById(DataSourceType sourceHeader, Integer id) {
+        return resolveDataAccess(sourceHeader).getCharacterViewById(id);
     }
 
     public CharacterResponseDTO createCharacter(DataSourceType sourceHeader, CreateCharacterRequestDTO request) {
