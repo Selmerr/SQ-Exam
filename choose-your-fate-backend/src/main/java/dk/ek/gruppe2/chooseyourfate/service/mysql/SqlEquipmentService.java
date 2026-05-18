@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SqlEquipmentService implements EquipmentDataAccess {
@@ -80,6 +81,33 @@ public class SqlEquipmentService implements EquipmentDataAccess {
         }
         else {
             return null;
+        }
+    }
+
+
+    public void validateItemEquipped(Integer characterId, Item item) {
+        Equipment equipment = equipmentRepository.findById(characterId).orElseThrow(() -> new ResourceNotFoundException("Equipment not found for character id: " + characterId));
+        switch (item.getType()) {
+            case ARMOR_HEAD -> {
+                if (equipment.getHead() == null || !equipment.getHead().getId().equals(item.getId())) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Character does not have this head item equipped");
+                }
+            }
+            case ARMOR_CHEST -> {
+                if (equipment.getChest() == null || !equipment.getChest().getId().equals(item.getId())) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Character does not have this chest item equipped");
+                }
+
+            }
+            case ARMOR_LEGS -> {
+                if (equipment.getLegs() == null || !equipment.getLegs().getId().equals(item.getId())) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Character does not have this leg item equipped");
+                }
+
+            }
+            default -> {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid item type: " + item.getType());
+            }
         }
     }
 }

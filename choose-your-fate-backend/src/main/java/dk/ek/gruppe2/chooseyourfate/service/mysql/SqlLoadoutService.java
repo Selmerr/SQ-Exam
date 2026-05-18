@@ -37,6 +37,7 @@ public class SqlLoadoutService implements LoadoutDataAccess {
     public LoadoutResponseDTO unequipItem(Integer characterId, Integer itemId) {
         Item item = itemService.getItemEntity(itemId);
         Inventory inventory = inventoryService.getInventoryEntityByCharacterId(characterId);
+        equipmentService.validateItemEquipped(characterId, item);
         Equipment equipment = equipmentService.getEquipmentEntity(characterId);
         switch (item.getType()) {
             case ARMOR_HEAD ->  {
