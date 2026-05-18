@@ -10,6 +10,7 @@ import org.springframework.ai.elevenlabs.api.ElevenLabsApi;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
 import java.time.LocalDateTime;
 
 @Service
@@ -26,7 +27,7 @@ public class TTSService {
         if (characterPath == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Character path not found for character id: " + characterId);
         }
-        if (characterPath.getAudioBlob() != null && AudioUpdatedAfterSummary(characterPath.getSummary_updated_at(), characterPath.getAudio_blob_updated_at())) {
+        if (characterPath.getAudioBlob() != null && isAudioUpdatedAfterSummary(characterPath.getSummary_updated_at(), characterPath.getAudio_blob_updated_at())) {
             return characterPath.getAudioBlob();
         }
         else {
@@ -59,7 +60,8 @@ public class TTSService {
         return response.getResult().getOutput();
     }
 
-    public boolean AudioUpdatedAfterSummary(LocalDateTime summaryDate, LocalDateTime audioBlobDate) {
+    public boolean isAudioUpdatedAfterSummary(LocalDateTime summaryDate, LocalDateTime audioBlobDate) {
+        if (summaryDate == null) return true;
         return audioBlobDate.isAfter(summaryDate);
     }
 
