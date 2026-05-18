@@ -1,6 +1,5 @@
 package dk.ek.gruppe2.chooseyourfate.service;
 
-import dk.ek.gruppe2.chooseyourfate.exception.ResourceNotFoundException;
 import dk.ek.gruppe2.chooseyourfate.model.mysql.CharacterPath;
 import dk.ek.gruppe2.chooseyourfate.repository.mysql.CharacterPathRepository;
 import org.springframework.ai.audio.tts.TextToSpeechPrompt;
@@ -11,9 +10,6 @@ import org.springframework.ai.elevenlabs.api.ElevenLabsApi;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.io.IOException;
-import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Service
