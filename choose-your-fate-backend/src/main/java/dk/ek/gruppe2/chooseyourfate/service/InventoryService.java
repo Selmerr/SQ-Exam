@@ -4,6 +4,7 @@ import dk.ek.gruppe2.chooseyourfate.dto.InventoryResponseDTO;
 import dk.ek.gruppe2.chooseyourfate.enums.DataSourceType;
 import dk.ek.gruppe2.chooseyourfate.interfaces.InventoryDataAccess;
 import dk.ek.gruppe2.chooseyourfate.service.mysql.SqlInventoryService;
+import org.springframework.stereotype.Service;
 
 @Service
 public class InventoryService {
@@ -18,6 +19,14 @@ public class InventoryService {
         return resolveDataService(source).getInventoryByCharacterId(characterId);
     }
 
+    public InventoryResponseDTO addItemToInventory(DataSourceType dataSource, Integer inventoryId, Integer itemId) {
+        return resolveDataService(dataSource).addItemToInventory(inventoryId, itemId);
+    }
+
+    public void useItem(DataSourceType dataSource, Integer inventoryId, Integer itemId) {
+        resolveDataService(dataSource).useItem(inventoryId, itemId);
+    }
+
     private InventoryDataAccess resolveDataService(DataSourceType source) {
         return switch (source) {
             case SQL -> sqlInventoryService;
@@ -26,4 +35,5 @@ public class InventoryService {
             default -> throw new IllegalArgumentException("Unexpected value: " + source);
         };
     }
+
 }

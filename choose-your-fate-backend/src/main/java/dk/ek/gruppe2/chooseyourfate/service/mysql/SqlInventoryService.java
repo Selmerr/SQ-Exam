@@ -3,6 +3,7 @@ package dk.ek.gruppe2.chooseyourfate.service.mysql;
 import dk.ek.gruppe2.chooseyourfate.dto.InventoryHasItemResponseDTO;
 import dk.ek.gruppe2.chooseyourfate.dto.InventoryResponseDTO;
 import dk.ek.gruppe2.chooseyourfate.dto.ItemResponseDTO;
+import dk.ek.gruppe2.chooseyourfate.exception.ResourceNotFoundException;
 import dk.ek.gruppe2.chooseyourfate.interfaces.InventoryDataAccess;
 import dk.ek.gruppe2.chooseyourfate.model.mysql.Inventory;
 import dk.ek.gruppe2.chooseyourfate.model.mysql.InventoryHasItem;
@@ -32,7 +33,10 @@ public class SqlInventoryService implements InventoryDataAccess {
 
     @Override
     public InventoryResponseDTO getInventoryByCharacterId(Integer characterId) {
-        Inventory inventory = inventoryRepository.findById(characterId).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Inventory inventory = inventoryRepository.findByCharacter_Id(characterId);
+        if(inventory == null) {
+            throw new ResourceNotFoundException("Inventory with character id " + characterId + " not found");
+        }
         return toInventoryResponseDTO(inventory);
     }
 
@@ -93,10 +97,6 @@ public class SqlInventoryService implements InventoryDataAccess {
         } else {
             inventoryHasItemRepository.delete(inventoryHasItem);
         }
-    }
-
-    public boolean itemInInventory(Integer inventoryId, Integer itemId) {
-        return inventoryHasItemRepository.existsByInventoryIdAndItemId(inventoryId, itemId);
     }
 
     public void validateItemInInventory(Integer inventoryId, Integer itemId) {
