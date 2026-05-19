@@ -4,7 +4,7 @@
 Choose Your Fate
 
 ## Course Context
-This document is written for the Software Quality exam project. It defines the intended scope, functional requirements, and quality requirements for the current version of the system. The document is aligned with the team's current goal of delivering a vertical slice first and then extending that slice into one complete playable adventure.
+This document is written for our Software Quality exam project. It defines the intended scope, functional requirements, and non-functional requirements for the system. This document reflects the team's current goal of creating a vertical slice of the software, that can be expanded upon further later.
 
 ## 1. Introduction
 
@@ -26,14 +26,16 @@ The primary audience for this document is:
 
 - The development group
 - Reviewers
-- Teachers and examiners
+- Backers of the project (in this case teachers and examiners)
 
 ### 1.3 Product Scope
-The current product scope is a vertical slice of a browser-based text RPG with a frontend, backend API, relational database, authentication, and a quality-focused delivery process.
+The current product scope is a vertical slice of a browser-based text RPG with a frontend, backend API, relational database, fallback, authentication, and a quality-focused delivery process.
 
 The short-term project goal is:
 
 - To implement a playable vertical slice that proves the main gameplay loop.
+
+- Incorporate a fallback if the system fails
 
 The next step after the vertical slice is:
 
@@ -43,13 +45,12 @@ Out of scope for the current slice:
 
 - Multiple fully selectable adventures
 - Large-scale content management beyond what is needed for one demonstrable adventure
-- Advanced social features such as chat, guilds, multiplayer sessions, or leaderboards
 
 ### 1.4 Definitions
 
 - **Adventure**: A complete branching story consisting of chapters, scenes, and choices.
 - **Scene**: A narrative unit presented to the player.
-- **Choice**: An option that moves the player to another scene and may affect progression.
+- **Choice**: An option that moves the player to another or the same scene and may affect progression.
 - **Character**: A player-owned game entity used to progress through an adventure.
 - **Vertical slice**: A small but complete end-to-end part of the system that demonstrates core functionality across frontend, backend, database, and testing.
 - **Failover database**: A secondary SQL database instance intended to take over if the primary database becomes unavailable.
@@ -64,7 +65,7 @@ Choose Your Fate is a client-server web application consisting of:
 - A relational database for persistent storage
 - An external public API integration
 
-For the Software Quality version of the project, the persistence strategy is relational. The system architecture is intended to include:
+For this version of the project, the persistence strategy is relational. The system architecture is intended to include:
 
 - One primary SQL database instance
 - One mirrored or standby SQL database instance for improved availability
@@ -79,14 +80,14 @@ A player can:
 - Create and manage characters
 - Play through scenes
 - Make choices
-- Potentially manage inventory, items, and quests depending on the completed slice
+- Manage inventory, items, and equipment depending on the completed slice
 
 #### Administrator
 An administrator can:
 
 - Manage content for adventures
 - Maintain scenes, choices, and related story data
-- Potentially manage chapters, items, quests, and other game entities
+- Manage chapters, items, quests, equipment and ETC... (All CRUD)
 
 ## 3. Assumptions and Constraints
 
@@ -95,15 +96,15 @@ An administrator can:
 - The system is used through a web browser.
 - Users have internet access.
 - The backend exposes a REST-style API.
-- A relational database is the authoritative source of game and account data in the Software Quality version.
+- A relational database is the authoritative source of game and account data.
 - The project will include CI and automated testing as part of the delivery.
 
 ### 3.2 Constraints
 
 - The project is developed within course time and team capacity.
 - The deliverable must contain a frontend, backend, database, external API integration, testing, and CI.
-- The current scope is limited to one vertical slice and then one full demonstrable adventure.
-- High availability is addressed through a mirrored SQL setup rather than through multiple heterogeneous databases.
+- The current scope is limited to one vertical slice.
+- High availability is addressed through a mirrored SQL setup. Which is implemented as an automatic failover.
 
 ## 4. Functional Requirements
 
@@ -118,8 +119,8 @@ The system shall allow registered users to log in and receive authenticated acce
 #### FR-3 Authorization
 The system shall distinguish between at least two roles:
 
-- Player
-- Administrator
+- USER
+- ADMIN
 
 #### FR-4 Account Access Control
 The system shall ensure that players can only access or modify their own account-related gameplay data unless they have administrator privileges.
@@ -164,10 +165,10 @@ The system shall allow administrators to create, read, update, and delete story 
 ### 4.5 Inventory, Items, and Quests
 
 #### FR-14 Inventory Support
-The system should support a character inventory if this functionality is included in the implemented slice.
+The system should support a character inventory.
 
 #### FR-15 Item Support
-The system should support items associated with the character and/or adventure logic if this functionality is included in the implemented slice.
+The system should support items associated with the character and/or adventure logic.
 
 #### FR-16 Quest Support
 The system should support quest data and quest progression if this functionality is included in the implemented slice.
@@ -178,10 +179,9 @@ The system should support quest data and quest progression if this functionality
 The system shall integrate with at least one external public API as required by the course assignment.
 
 #### FR-18 External API Isolation
-The external API integration shall be encapsulated so that failures in the external service do not corrupt internal game data.
+The external API integration shall be encapsulated so that failures in the external service do not corrupt internal game data. (External API chosen is called 11Labs).
 
-Note:
-The current codebase appears to include text-to-speech integration. If the group keeps this as the selected external API integration, the final document can name that integration explicitly.
+
 
 ## 5. Non-Functional Requirements
 
@@ -199,7 +199,7 @@ The database design should minimize downtime in the event of primary database fa
 ### 5.2 Reliability and Data Integrity
 
 #### NFR-4 Consistent Persistence
-The system shall preserve data consistency for accounts, characters, scenes, and related game entities.
+The system shall preserve data consistency.
 
 #### NFR-5 Constraint Enforcement
 The relational database shall enforce key integrity rules such as primary keys, foreign keys, and relevant uniqueness constraints.
@@ -213,24 +213,24 @@ The backend shall return meaningful error responses for invalid input, unauthori
 The system shall protect secured endpoints using authenticated access control.
 
 #### NFR-8 Password Protection
-User passwords shall not be stored in plaintext.
+Passwords shall not be stored in plaintext and is also hashed with salt.
 
 #### NFR-9 Authorization Security
 The system shall enforce role-based access to privileged operations.
 
 #### NFR-10 Input Validation
-The system shall validate client input before processing or persisting data.
+The system shall validate input values before processing or persisting data.
 
 ### 5.4 Performance
 
 #### NFR-11 Normal Response Time
-Under normal use, common API operations should respond quickly enough to support a smooth gameplay experience.
+Under normal use, common API operations should respond within 100 miliseconds to support a smooth gameplay experience.
 
 #### NFR-12 Gameplay Responsiveness
 Scene navigation and choice submission should feel responsive from the player's perspective.
 
 #### NFR-13 Load Awareness
-The system shall be testable with load, stress, and spike testing as required by the course.
+The system shall be testable with load, stress, and spike testing.
 
 ### 5.5 Maintainability
 
@@ -255,16 +255,21 @@ The project shall include unit tests for business logic and critical components.
 The project shall include integration tests for backend and persistence behavior where relevant.
 
 #### NFR-20 Automated API Testing
+
+##### NFR-20.1 Automated internal API Testing
 The project shall include automated tests for internal API endpoints, covering both positive and negative cases.
+
+##### NFR-20.2 Automated external API Testing
+The project shall include automated tests for external API endpoints, covering both positive and negative cases.
 
 #### NFR-21 Automated End-to-End UI Testing
 The project shall include browser-based end-to-end tests implemented in code.
 
 #### NFR-22 Frontend UI Test Tool
-Playwright shall be used for end-to-end frontend testing.
+Playwright shall be used for end-to-end testing.
 
 #### NFR-23 Coverage and Static Analysis
-The project shall include code coverage reporting and the use of at least one static analysis or static testing tool beyond basic IDE linting.
+The project shall included code coverage and the use of SonarCube for static analysis.
 
 ## 6. Technology Requirements
 
@@ -275,10 +280,10 @@ The backend shall be implemented in Java using Spring Boot.
 The frontend shall be implemented as a web client using React and TypeScript.
 
 ### 6.3 Database
-The Software Quality version of the system shall use a relational SQL database as the primary persistence solution.
+The version of the system shall use MySQL as the relational database as the primary persistence solution.
 
 ### 6.4 Authentication
-The backend shall support token-based authentication for protected endpoints.
+The backend shall support JWT token-based authentication for protected endpoints.
 
 ### 6.5 Testing Tooling
 The project shall support automated tests for backend and frontend, including Playwright for UI testing.
@@ -286,7 +291,7 @@ The project shall support automated tests for backend and frontend, including Pl
 ## 7. Initial User Stories
 
 ### US-1 Player Login
-As a player, I want to log in so that I can access my game progress and characters.
+As a player, I want to log in so that I can access my charactes and see their current game progress.
 
 ### US-2 Create Character
 As a player, I want to create a character so that I can begin an adventure.
@@ -295,7 +300,7 @@ As a player, I want to create a character so that I can begin an adventure.
 As a player, I want to view my current scene and available choices so that I can progress through the story.
 
 ### US-4 Make Choice
-As a player, I want to choose between different actions so that the story changes based on my decisions.
+As a player, I want to be able to make different choices so that the story changes based on the decisions.
 
 ### US-5 Admin Content Management
 As an administrator, I want to manage story content so that new adventures and scenes can be added to the platform.
@@ -317,14 +322,5 @@ The current vertical slice is considered successful if the following is demonstr
 
 The next milestone after the vertical slice is a complete playable adventure with the same architectural and quality principles.
 
-## 9. Open Decisions
-
-The following points should be confirmed before the final PDF version is submitted:
-
-- Which external public API is the officially selected integration
-- Whether inventory, items, and quests are included in the final slice or listed as partial/optional functionality
-- Whether the mirrored SQL setup is automatic failover, manual failover, or standby-only in the final implementation
-- Whether the final wording should describe "adventures" as a future feature or keep the current delivery strictly focused on one adventure
-
-## 10. Summary
-Choose Your Fate is specified as a quality-focused web application for interactive text-based adventure gameplay. The current Software Quality version focuses on a relational architecture, authenticated gameplay, content administration, automated testing, CI, and improved availability through a mirrored SQL setup. The document deliberately reflects the team's current delivery target: one solid vertical slice first, then one complete adventure.
+## 9. Summary
+Choose Your Fate is specified as a quality-focused web application for interactive text-based adventure gameplay. The current version focuses on a relational architecture, authenticated gameplay, content administration, automated testing, CI, and improved availability through a mirrored SQL setup.
