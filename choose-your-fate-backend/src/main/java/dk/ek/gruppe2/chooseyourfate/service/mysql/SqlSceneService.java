@@ -37,8 +37,8 @@ public class SqlSceneService implements SceneDataAccess {
 
     @Override
     // Returns one SQL scene with the choices and destination scenes already loaded.
-    public SceneLookaheadResponseDTO getSceneById(Integer id) {
-        return new SceneLookaheadResponseDTO(getSceneEntity(id));
+    public SceneResponseDTO getSceneById(Integer id) {
+        return new SceneResponseDTO(getSceneEntity(id));
     }
 
     @Override
@@ -75,6 +75,6 @@ public class SqlSceneService implements SceneDataAccess {
 
     @Override
     public SceneLookaheadResponseDTO getSceneLookahead(Integer id) {
-        throw new UnsupportedOperationException("Scene lookahead is not implemented for SQL");
+        return new SceneLookaheadResponseDTO(getSceneEntity(id));
     }
 }

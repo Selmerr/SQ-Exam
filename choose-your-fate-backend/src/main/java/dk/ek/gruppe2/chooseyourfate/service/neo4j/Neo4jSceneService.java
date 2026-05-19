@@ -1,8 +1,8 @@
 package dk.ek.gruppe2.chooseyourfate.service.neo4j;
 
 import dk.ek.gruppe2.chooseyourfate.dto.scene.CreateSceneRequestDTO;
-import dk.ek.gruppe2.chooseyourfate.dto.scene.SceneLookaheadResponseDTO;
 import dk.ek.gruppe2.chooseyourfate.dto.scene.SceneResponseDTO;
+import dk.ek.gruppe2.chooseyourfate.dto.scene.SceneLookaheadResponseDTO;
 import dk.ek.gruppe2.chooseyourfate.dto.scene.UpdateSceneRequestDTO;
 import dk.ek.gruppe2.chooseyourfate.interfaces.SceneDataAccess;
 import dk.ek.gruppe2.chooseyourfate.repository.neo4j.Neo4jSceneRepository;
