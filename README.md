@@ -47,6 +47,13 @@ MongoDB migration:
 GET http://localhost:8080/migration/run
 ```
 
+## Dump files
+
+Database dump files should be placed in the [database_backups](C:\Users\pf\Desktop\Skole\Databases\projects\mandetory\RPG_Choose_Your_Fate\database_backups) folder.
+
+- MongoDB dump path: [database_backups/mongo](C:\Users\pf\Desktop\Skole\Databases\projects\mandetory\RPG_Choose_Your_Fate\database_backups\mongo)
+- Neo4j dump path: [database_backups/neo4j](C:\Users\pf\Desktop\Skole\Databases\projects\mandetory\RPG_Choose_Your_Fate\database_backups\neo4j)
+
 ## SQL scripts
 
 All SQL scripts are located in the [rpg_mysql](C:\Users\pf\Desktop\Skole\Databases\projects\mandetory\RPG_Choose_Your_Fate\rpg_mysql) folder.
@@ -62,4 +69,3 @@ The local Docker MySQL setup runs the scripts in this order:
 7. `07_seed_scene_choice_expansion.sql`
 8. `08_security_roles.sql`
 9. `09_events.sql`
-
