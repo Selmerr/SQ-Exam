@@ -2,11 +2,11 @@ FROM maven:3.9-eclipse-temurin-21 AS builder
 WORKDIR /app
 
 # Copy pom.xml first (caches dependencies if pom.xml hasn't changed)
-COPY pom.xml .
+COPY choose-your-fate-backend/pom.xml .
 RUN mvn dependency:go-offline -B
 
 # Copy source and build
-COPY src ./src
+COPY choose-your-fate-backend/src ./src
 RUN mvn clean package -DskipTests -B
 
 # Stage 2: Run
