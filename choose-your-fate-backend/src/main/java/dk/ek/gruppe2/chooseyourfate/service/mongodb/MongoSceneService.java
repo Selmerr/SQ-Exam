@@ -56,6 +56,9 @@ public class MongoSceneService implements SceneDataAccess {
 
     @Override
     public void deleteScene(String id) {
+        if (!sceneRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Scene not found for id: " + id);
+        }
         sceneRepository.deleteById(id);
     }
 
