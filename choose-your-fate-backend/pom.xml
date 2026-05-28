@@ -200,10 +200,40 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
+					<!-- ONLY run unit folder -->
+					<includes>
+						<include>**/*Test.java</include>
+					</includes>
+
+					<!-- NEVER run integration tests -->
+					<excludes>
+						<exclude>**/*IT.java</exclude>
+					</excludes>
 					<argLine>
 						-javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar
 						-Xshare:off
 					</argLine>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
+
+				<configuration>
+
+					<!-- ONLY integration folder -->
+					<includes>
+						<include>**/*IT.java</include>
+					</includes>
+
 				</configuration>
 			</plugin>
 

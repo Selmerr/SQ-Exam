@@ -1,4 +1,4 @@
-package com.example.chooseyourfatebackend;
+package dk.ek.gruppe2.chooseyourfatebackend;
 
 import dk.ek.gruppe2.chooseyourfate.ChooseYourFateBackendApplication;
 import org.springframework.boot.SpringApplication;

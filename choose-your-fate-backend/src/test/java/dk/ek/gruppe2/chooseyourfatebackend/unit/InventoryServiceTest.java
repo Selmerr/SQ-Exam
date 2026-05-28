@@ -1,4 +1,4 @@
-package com.example.chooseyourfatebackend.unitTests;
+package dk.ek.gruppe2.chooseyourfatebackend.unit;
 
 import dk.ek.gruppe2.chooseyourfate.dto.InventoryHasItemResponseDTO;
 import dk.ek.gruppe2.chooseyourfate.dto.InventoryResponseDTO;
@@ -10,18 +10,13 @@ import dk.ek.gruppe2.chooseyourfate.repository.mysql.InventoryHasItemRepository;
 import dk.ek.gruppe2.chooseyourfate.repository.mysql.InventoryRepository;
 import dk.ek.gruppe2.chooseyourfate.service.InventoryService;
 import dk.ek.gruppe2.chooseyourfate.service.ItemService;
-import org.hibernate.mapping.Any;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EmptySource;
-import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
