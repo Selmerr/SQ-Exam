@@ -3,9 +3,6 @@ package dk.ek.gruppe2.chooseyourfate.dto;
 import jakarta.validation.constraints.NotNull;
 
 public class CreateCharacterRequestDTO {
-    @NotNull(message = "accountId is required")
-    private Integer accountId;
-
     private Integer chapterId;
     private Integer sceneId;
     
@@ -14,14 +11,6 @@ public class CreateCharacterRequestDTO {
     private String name;
 
     public CreateCharacterRequestDTO() {
-    }
-
-    public Integer getAccountId() {
-        return accountId;
-    }
-
-    public void setAccountId(Integer accountId) {
-        this.accountId = accountId;
     }
 
     public Integer getRaceDetailsId() {
