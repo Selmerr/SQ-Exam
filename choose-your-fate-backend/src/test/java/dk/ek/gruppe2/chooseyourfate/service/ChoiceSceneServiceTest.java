@@ -10,8 +10,6 @@ import dk.ek.gruppe2.chooseyourfate.model.mysql.Scene;
 import dk.ek.gruppe2.chooseyourfate.repository.mysql.ChapterRepository;
 import dk.ek.gruppe2.chooseyourfate.repository.mysql.ChoiceRepository;
 import dk.ek.gruppe2.chooseyourfate.repository.mysql.SceneRepository;
-import dk.ek.gruppe2.chooseyourfate.service.mysql.SqlChoiceService;
-import dk.ek.gruppe2.chooseyourfate.service.mysql.SqlSceneService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,8 +41,8 @@ class ChoiceSceneServiceTest {
     @Mock
     private ChapterRepository chapterRepository;
 
-    private SqlChoiceService sqlChoiceService;
-    private SqlSceneService sqlSceneService;
+    private ChoiceService choiceService;
+    private SceneService sceneService;
 
     private Chapter chapter;
     private Scene townGate;
@@ -56,8 +54,8 @@ class ChoiceSceneServiceTest {
 
     @BeforeEach
     void setUp() {
-        sqlChoiceService = new SqlChoiceService(choiceRepository, sceneRepository);
-        sqlSceneService = new SqlSceneService(sceneRepository, chapterRepository);
+        choiceService = new ChoiceService(choiceRepository, sceneRepository);
+        sceneService = new SceneService(sceneRepository, chapterRepository);
 
         chapter = new Chapter();
         chapter.setId(1);
@@ -108,7 +106,7 @@ class ChoiceSceneServiceTest {
     void getChoiceByIdReturnsChoiceMappedFromRepositoryEntity() {
         when(choiceRepository.findById(1)).thenReturn(Optional.of(enterMarketChoice));
 
-        ChoiceResponseDTO actual = sqlChoiceService.getChoiceById(1);
+        ChoiceResponseDTO actual = choiceService.getChoiceById(1);
 
         assertEquals("1", actual.getId());
         assertEquals("1", actual.getSceneId());
@@ -127,7 +125,7 @@ class ChoiceSceneServiceTest {
 
         ResourceNotFoundException exception = assertThrows(
                 ResourceNotFoundException.class,
-                () -> sqlChoiceService.getChoiceById(0)
+                () -> choiceService.getChoiceById(0)
         );
 
         assertEquals("Choice not found with id: 0", exception.getMessage());
@@ -138,7 +136,7 @@ class ChoiceSceneServiceTest {
     void getAllChoicesReturnsMappedChoicesFromRepositoryEntities() {
         when(choiceRepository.findAll()).thenReturn(List.of(enterMarketChoice, climbWatchtowerChoice));
 
-        List<ChoiceResponseDTO> actual = sqlChoiceService.getAllChoices();
+        List<ChoiceResponseDTO> actual = choiceService.getAllChoices();
 
         assertEquals(2, actual.size());
         assertEquals("1", actual.get(0).getId());
@@ -158,7 +156,7 @@ class ChoiceSceneServiceTest {
             return savedChoice;
         });
 
-        ChoiceResponseDTO actual = sqlChoiceService.createChoice(createChoiceRequest);
+        ChoiceResponseDTO actual = choiceService.createChoice(createChoiceRequest);
 
         ArgumentCaptor<Choice> choiceCaptor = ArgumentCaptor.forClass(Choice.class);
         verify(choiceRepository).save(choiceCaptor.capture());
@@ -181,10 +179,10 @@ class ChoiceSceneServiceTest {
 
     @Test
     void getSceneLookaheadReturnsSceneChoicesAndDestinationScenesFromRepositoryEntity() {
-        townGate.setChoices(List.of(climbWatchtowerChoice, enterMarketChoice));
+        townGate.setChoices(List.of(enterMarketChoice, climbWatchtowerChoice));
         when(sceneRepository.findByIdWithLookAhead(1)).thenReturn(Optional.of(townGate));
 
-        SceneLookaheadResponseDTO actual = sqlSceneService.getSceneLookahead("1");
+        SceneLookaheadResponseDTO actual = sceneService.getSceneLookahead(1);
 
         assertEquals("1", actual.getScene().getId());
         assertEquals("Town Gate", actual.getScene().getName());
@@ -193,8 +191,8 @@ class ChoiceSceneServiceTest {
         assertEquals("1", actual.getChoices().get(0).getId());
         assertEquals("2", actual.getChoices().get(1).getId());
         assertEquals(2, actual.getDestinationScenes().size());
-        assertEquals("Watchtower", actual.getDestinationScenes().get(0).getName());
-        assertEquals("Market Square", actual.getDestinationScenes().get(1).getName());
+        assertEquals("Market Square", actual.getDestinationScenes().get(0).getName());
+        assertEquals("Watchtower", actual.getDestinationScenes().get(1).getName());
         verify(sceneRepository).findByIdWithLookAhead(1);
     }
 
@@ -204,7 +202,7 @@ class ChoiceSceneServiceTest {
 
         ResourceNotFoundException exception = assertThrows(
                 ResourceNotFoundException.class,
-                () -> sqlSceneService.getSceneLookahead("0")
+                () -> sceneService.getSceneLookahead(0)
         );
 
         assertEquals("Scene not found with id: 0", exception.getMessage());
