@@ -1,20 +1,20 @@
-package dk.ek.gruppe2.chooseyourfate.service;
+package dk.ek.gruppe2.chooseyourfate.unit;
 
 import dk.ek.gruppe2.chooseyourfate.dto.choice.ChoiceResponseDTO;
 import dk.ek.gruppe2.chooseyourfate.dto.choice.CreateChoiceRequestDTO;
-import dk.ek.gruppe2.chooseyourfate.dto.scene.SceneLookaheadResponseDTO;
 import dk.ek.gruppe2.chooseyourfate.exception.ResourceNotFoundException;
 import dk.ek.gruppe2.chooseyourfate.model.mysql.Chapter;
 import dk.ek.gruppe2.chooseyourfate.model.mysql.Choice;
 import dk.ek.gruppe2.chooseyourfate.model.mysql.Scene;
-import dk.ek.gruppe2.chooseyourfate.repository.mysql.ChapterRepository;
 import dk.ek.gruppe2.chooseyourfate.repository.mysql.ChoiceRepository;
 import dk.ek.gruppe2.chooseyourfate.repository.mysql.SceneRepository;
+import dk.ek.gruppe2.chooseyourfate.service.ChoiceService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -30,7 +30,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ChoiceSceneServiceTest {
+class ChoiceServiceTest {
 
     @Mock
     private ChoiceRepository choiceRepository;
@@ -38,13 +38,8 @@ class ChoiceSceneServiceTest {
     @Mock
     private SceneRepository sceneRepository;
 
-    @Mock
-    private ChapterRepository chapterRepository;
-
+    @InjectMocks
     private ChoiceService choiceService;
-    private SceneService sceneService;
-
-    private Chapter chapter;
     private Scene townGate;
     private Scene marketSquare;
     private Scene watchtower;
@@ -54,10 +49,7 @@ class ChoiceSceneServiceTest {
 
     @BeforeEach
     void setUp() {
-        choiceService = new ChoiceService(choiceRepository, sceneRepository);
-        sceneService = new SceneService(sceneRepository, chapterRepository);
-
-        chapter = new Chapter();
+        Chapter chapter = new Chapter();
         chapter.setId(1);
         chapter.setName("Festival Chapter");
 
@@ -99,7 +91,7 @@ class ChoiceSceneServiceTest {
 
     @AfterEach
     void tearDown() {
-        verifyNoMoreInteractions(choiceRepository, sceneRepository, chapterRepository);
+        verifyNoMoreInteractions(choiceRepository, sceneRepository);
     }
 
     @Test
@@ -175,38 +167,6 @@ class ChoiceSceneServiceTest {
         assertEquals("2", actual.getDestinationSceneId());
         verify(sceneRepository).findById(1);
         verify(sceneRepository).findById(2);
-    }
-
-    @Test
-    void getSceneLookaheadReturnsSceneChoicesAndDestinationScenesFromRepositoryEntity() {
-        townGate.setChoices(List.of(enterMarketChoice, climbWatchtowerChoice));
-        when(sceneRepository.findByIdWithLookAhead(1)).thenReturn(Optional.of(townGate));
-
-        SceneLookaheadResponseDTO actual = sceneService.getSceneLookahead(1);
-
-        assertEquals("1", actual.getScene().getId());
-        assertEquals("Town Gate", actual.getScene().getName());
-        assertEquals("1", actual.getScene().getChapterId());
-        assertEquals(2, actual.getChoices().size());
-        assertEquals("1", actual.getChoices().get(0).getId());
-        assertEquals("2", actual.getChoices().get(1).getId());
-        assertEquals(2, actual.getDestinationScenes().size());
-        assertEquals("Market Square", actual.getDestinationScenes().get(0).getName());
-        assertEquals("Watchtower", actual.getDestinationScenes().get(1).getName());
-        verify(sceneRepository).findByIdWithLookAhead(1);
-    }
-
-    @Test
-    void getSceneLookaheadThrowsResourceNotFoundWhenSceneDoesNotExist() {
-        when(sceneRepository.findByIdWithLookAhead(0)).thenReturn(Optional.empty());
-
-        ResourceNotFoundException exception = assertThrows(
-                ResourceNotFoundException.class,
-                () -> sceneService.getSceneLookahead(0)
-        );
-
-        assertEquals("Scene not found with id: 0", exception.getMessage());
-        verify(sceneRepository).findByIdWithLookAhead(0);
     }
 
     private Scene scene(Integer id, String name, Chapter chapter) {
