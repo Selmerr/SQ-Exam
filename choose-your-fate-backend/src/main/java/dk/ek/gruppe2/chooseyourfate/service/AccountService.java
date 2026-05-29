@@ -3,6 +3,7 @@ package dk.ek.gruppe2.chooseyourfate.service;
 import dk.ek.gruppe2.chooseyourfate.datasource.DataSourceResolver;
 import dk.ek.gruppe2.chooseyourfate.availability.replication.ReplicationOperationType;
 import dk.ek.gruppe2.chooseyourfate.availability.replication.WriteOperationCoordinator;
+
 import dk.ek.gruppe2.chooseyourfate.dto.AccountResponseDTO;
 import dk.ek.gruppe2.chooseyourfate.dto.CreateAccountRequestDTO;
 import dk.ek.gruppe2.chooseyourfate.dto.UpdateAccountRequestDTO;
@@ -20,32 +21,31 @@ import java.util.Map;
 @Service
 public class AccountService {
 
-    private final DataSourceResolver dataSourceResolver;
     private final SqlAccountService sqlAccountService;
     private final WriteOperationCoordinator writeOperationCoordinator;
     private final PasswordEncoder passwordEncoder;
 
     public AccountService(
+
             DataSourceResolver dataSourceResolver,
             SqlAccountService sqlAccountService,
             WriteOperationCoordinator writeOperationCoordinator,
             PasswordEncoder passwordEncoder
     ) {
-        this.dataSourceResolver = dataSourceResolver;
         this.sqlAccountService = sqlAccountService;
         this.writeOperationCoordinator = writeOperationCoordinator;
         this.passwordEncoder = passwordEncoder;
     }
 
-    public List<AccountResponseDTO> getAllAccounts(String sourceHeader) {
+    public List<AccountResponseDTO> getAllAccounts(DataSourceType sourceHeader) {
         return resolveDataService(sourceHeader).getAllAccounts();
     }
 
-    public AccountResponseDTO getAccountById(String sourceHeader, Integer id) {
+    public AccountResponseDTO getAccountById(DataSourceType sourceHeader, Integer id) {
         return resolveDataService(sourceHeader).getAccountById(id);
     }
 
-    public AccountResponseDTO createAccount(String sourceHeader, CreateAccountRequestDTO request) {
+    public AccountResponseDTO createAccount(DataSourceType sourceHeader, CreateAccountRequestDTO request) {
         return writeOperationCoordinator.execute(
                 ReplicationOperationType.CREATE,
                 "account",
@@ -54,7 +54,7 @@ public class AccountService {
         );
     }
 
-    public AccountResponseDTO updateAccount(String sourceHeader, Integer id, UpdateAccountRequestDTO request) {
+    public AccountResponseDTO updateAccount(DataSourceType sourceHeader, Integer id, UpdateAccountRequestDTO request) {
         return writeOperationCoordinator.execute(
                 ReplicationOperationType.UPDATE,
                 "account",
@@ -63,7 +63,7 @@ public class AccountService {
         );
     }
 
-    public void deleteAccount(String sourceHeader, Integer id) {
+    public void deleteAccount(DataSourceType sourceHeader, Integer id) {
         writeOperationCoordinator.execute(
                 ReplicationOperationType.DELETE,
                 "account",
@@ -71,43 +71,41 @@ public class AccountService {
                 () -> resolveDataService(sourceHeader).deleteAccount(id)
         );
     }
-
-    public AccountResponseDTO registerAccount(CreateAccountRequestDTO request) {
+    public AccountResponseDTO registerAccount (CreateAccountRequestDTO request){
         return writeOperationCoordinator.execute(
-                ReplicationOperationType.CREATE,
-                "account",
-                createdAccount -> createAccountPayload(createdAccount, request),
-                () -> sqlAccountService.createAccount(request)
+                    ReplicationOperationType.CREATE,
+                    "account",
+                    createdAccount -> createAccountPayload(createdAccount, request),
+                    () -> sqlAccountService.createAccount(request)
         );
     }
 
-    private AccountDataAccess resolveDataService(String sourceHeader) {
-        DataSourceType dataSourceType = dataSourceResolver.resolve(sourceHeader);
-        return switch (dataSourceType) {
-            case SQL -> sqlAccountService;
-        };
-    }
-
-    private Map<String, Object> createAccountPayload(AccountResponseDTO account, CreateAccountRequestDTO request) {
-        Map<String, Object> payload = new HashMap<>();
-        payload.put("id", account.getId());
-        payload.put("username", account.getUsername());
-        payload.put("email", account.getEmail());
-        payload.put("characterLimit", account.getCharacterLimit());
-        payload.put("password", passwordEncoder.encode(request.getPassword()));
-        payload.put("role", Role.ROLE_USER.name());
-        return payload;
-    }
-
-    private Map<String, Object> updateAccountPayload(AccountResponseDTO account, UpdateAccountRequestDTO request) {
-        Map<String, Object> payload = new HashMap<>();
-        payload.put("id", account.getId());
-        payload.put("username", account.getUsername());
-        payload.put("email", account.getEmail());
-        payload.put("characterLimit", account.getCharacterLimit());
-        if (request.getPassword() != null && !request.getPassword().isBlank()) {
-            payload.put("password", passwordEncoder.encode(request.getPassword()));
+        private AccountDataAccess resolveDataService (DataSourceType sourceHeader){
+            return switch (sourceHeader) {
+                case SQL -> sqlAccountService;
+            };
         }
-        return payload;
-    }
+
+        private Map<String, Object> createAccountPayload (AccountResponseDTO account, CreateAccountRequestDTO request){
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("id", account.getId());
+            payload.put("username", account.getUsername());
+            payload.put("email", account.getEmail());
+            payload.put("characterLimit", account.getCharacterLimit());
+            payload.put("password", passwordEncoder.encode(request.getPassword()));
+            payload.put("role", Role.ROLE_USER.name());
+            return payload;
+        }
+
+        private Map<String, Object> updateAccountPayload (AccountResponseDTO account, UpdateAccountRequestDTO request){
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("id", account.getId());
+            payload.put("username", account.getUsername());
+            payload.put("email", account.getEmail());
+            payload.put("characterLimit", account.getCharacterLimit());
+            if (request.getPassword() != null && !request.getPassword().isBlank()) {
+                payload.put("password", passwordEncoder.encode(request.getPassword()));
+            }
+            return payload;
+        }
 }
