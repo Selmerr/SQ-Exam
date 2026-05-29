@@ -1,4 +1,4 @@
-package com.example.chooseyourfatebackend.integration;
+package dk.ek.gruppe2.chooseyourfate.integration;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -18,17 +17,29 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import dk.ek.gruppe2.chooseyourfate.ChooseYourFateBackendApplication;
+import dk.ek.gruppe2.chooseyourfate.TestContainerConfig;
 import dk.ek.gruppe2.chooseyourfate.dto.CharacterResponseDTO;
 import dk.ek.gruppe2.chooseyourfate.dto.CreateCharacterRequestDTO;
 import dk.ek.gruppe2.chooseyourfate.exception.ResourceNotFoundException;
-import dk.ek.gruppe2.chooseyourfate.model.mysql.Account;
-import dk.ek.gruppe2.chooseyourfate.model.mysql.CharacterDetails;
 import dk.ek.gruppe2.chooseyourfate.service.CharacterService;
+import jakarta.transaction.Transactional;
 
-@SpringBootTest(classes = ChooseYourFateBackendApplication.class)
+@Testcontainers
+@SpringBootTest
+@Transactional
 class CharacterServiceIntegrationTests {
+
+    @DynamicPropertySource
+    static void properties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", TestContainerConfig.MYSQL::getJdbcUrl);
+        registry.add("spring.datasource.password", TestContainerConfig.MYSQL::getPassword);
+        registry.add("spring.datasource.username", TestContainerConfig.MYSQL::getUsername);
+    }
 
     @Autowired
     private CharacterService characterService;

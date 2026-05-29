@@ -1,4 +1,4 @@
-package com.example.chooseyourfatebackend.unit;
+package dk.ek.gruppe2.chooseyourfate.unit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
