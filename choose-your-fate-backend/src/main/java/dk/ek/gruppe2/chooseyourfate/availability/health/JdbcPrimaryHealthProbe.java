@@ -10,7 +10,7 @@ public class JdbcPrimaryHealthProbe implements SqlHealthProbe {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public JdbcPrimaryHealthProbe(@Qualifier("jdbcTemplate") JdbcTemplate jdbcTemplate) {
+    public JdbcPrimaryHealthProbe(@Qualifier("primaryJdbcTemplate") JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

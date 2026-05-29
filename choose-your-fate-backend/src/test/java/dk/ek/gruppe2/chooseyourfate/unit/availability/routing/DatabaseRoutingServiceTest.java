@@ -1,5 +1,9 @@
-package dk.ek.gruppe2.chooseyourfate.availability.routing;
+package dk.ek.gruppe2.chooseyourfate.unit.availability.routing;
 
+import dk.ek.gruppe2.chooseyourfate.availability.routing.DatabaseRole;
+import dk.ek.gruppe2.chooseyourfate.availability.routing.DatabaseRoutingService;
+import dk.ek.gruppe2.chooseyourfate.availability.routing.DatabaseSystemState;
+import dk.ek.gruppe2.chooseyourfate.availability.routing.InvalidDatabaseStateTransitionException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

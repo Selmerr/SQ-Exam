@@ -27,8 +27,7 @@ public class PrimaryDataSourceConfig {
         this.password = password;
     }
 
-    @Bean(name = "dataSource")
-    @Primary
+    @Bean(name = "primaryDataSource")
     public DataSource primaryDataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
@@ -38,9 +37,8 @@ public class PrimaryDataSourceConfig {
         return dataSource;
     }
 
-    @Bean(name = "jdbcTemplate")
-    @Primary
-    public JdbcTemplate primaryJdbcTemplate(@Qualifier("dataSource") DataSource primaryDataSource) {
+    @Bean(name = "primaryJdbcTemplate")
+    public JdbcTemplate primaryJdbcTemplate(@Qualifier("primaryDataSource") DataSource primaryDataSource) {
         return new JdbcTemplate(primaryDataSource);
     }
 }

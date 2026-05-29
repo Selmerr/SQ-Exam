@@ -1,7 +1,8 @@
-package dk.ek.gruppe2.chooseyourfate.availability.failover;
+package dk.ek.gruppe2.chooseyourfate.unit.availability.failover;
 
 import dk.ek.gruppe2.chooseyourfate.availability.failback.DataSynchronizationService;
 import dk.ek.gruppe2.chooseyourfate.availability.failback.FailbackService;
+import dk.ek.gruppe2.chooseyourfate.availability.failover.FailoverService;
 import dk.ek.gruppe2.chooseyourfate.availability.health.PrimaryHealthService;
 import dk.ek.gruppe2.chooseyourfate.availability.health.SqlHealthProbe;
 import dk.ek.gruppe2.chooseyourfate.availability.replication.InMemoryReplicationQueue;
@@ -145,4 +146,82 @@ class FailoverAndFailbackServiceTest {
                 maxDrainJobs
         );
     }
+
+    // ---------- BVA for maxDrainJobsBeforeFailover ----------
+
+    @Test
+    void manualFailoverWithDrainSmallerThanQueueShouldAbort() {
+        // Arrange: drain limit < queue size, drain catches up partially
+        DatabaseRoutingService routingService = new DatabaseRoutingService();
+        PrimaryHealthService healthService = new PrimaryHealthService(new SequenceProbe(true), 1);
+        InMemoryReplicationQueue queue = queueWith(5);
+        FailoverService failoverService = createFailoverService(routingService, healthService, queue, 2);
+
+        // Act / Assert
+        assertThrows(InvalidDatabaseStateTransitionException.class, failoverService::triggerManualFailover);
+
+        // Assert: state rolled back, 3 jobs remain in queue (5 - 2 drained)
+        assertEquals(DatabaseSystemState.PRIMARY_ACTIVE, routingService.state());
+        assertEquals(3, queue.pendingJobs().size());
+    }
+
+    @Test
+    void manualFailoverWithDrainEqualToQueueShouldSucceed() {
+        // Arrange: match-boundary — drain limit equals queue size
+        DatabaseRoutingService routingService = new DatabaseRoutingService();
+        PrimaryHealthService healthService = new PrimaryHealthService(new SequenceProbe(true), 1);
+        InMemoryReplicationQueue queue = queueWith(3);
+        FailoverService failoverService = createFailoverService(routingService, healthService, queue, 3);
+
+        // Act
+        failoverService.triggerManualFailover();
+
+        // Assert: queue empty, failover completed
+        assertEquals(DatabaseSystemState.SECONDARY_ACTIVE, routingService.state());
+        assertEquals(0, queue.pendingJobs().size());
+    }
+
+    @Test
+    void manualFailoverWithDrainLargerThanQueueShouldSucceed() {
+        // Arrange: drain limit exceeds queue — queue is the binding constraint
+        DatabaseRoutingService routingService = new DatabaseRoutingService();
+        PrimaryHealthService healthService = new PrimaryHealthService(new SequenceProbe(true), 1);
+        InMemoryReplicationQueue queue = queueWith(2);
+        FailoverService failoverService = createFailoverService(routingService, healthService, queue, 10);
+
+        // Act
+        failoverService.triggerManualFailover();
+
+        // Assert
+        assertEquals(DatabaseSystemState.SECONDARY_ACTIVE, routingService.state());
+        assertEquals(0, queue.pendingJobs().size());
+    }
+
+    @Test
+    void negativeDrainLimitIsCoercedToZeroAndAbortsManualFailoverWithPendingJobs() {
+        // Arrange: invalid input (-1) → coerced to 0 → drain processes nothing
+        DatabaseRoutingService routingService = new DatabaseRoutingService();
+        PrimaryHealthService healthService = new PrimaryHealthService(new SequenceProbe(true), 1);
+        InMemoryReplicationQueue queue = queueWith(1);
+        FailoverService failoverService = createFailoverService(routingService, healthService, queue, -1);
+
+        // Act / Assert
+        assertThrows(InvalidDatabaseStateTransitionException.class, failoverService::triggerManualFailover);
+
+        // Assert: nothing drained, state restored
+        assertEquals(DatabaseSystemState.PRIMARY_ACTIVE, routingService.state());
+        assertEquals(1, queue.pendingJobs().size());
+    }
+
+// ---------- Helper ----------
+
+    private static InMemoryReplicationQueue queueWith(int jobCount) {
+        InMemoryReplicationQueue queue = new InMemoryReplicationQueue();
+        for (int i = 0; i < jobCount; i++) {
+            queue.addToQueue(new ReplicationJob(
+                    ReplicationOperationType.CREATE, "account", Map.of("id", i)));
+        }
+        return queue;
+    }
+
 }
