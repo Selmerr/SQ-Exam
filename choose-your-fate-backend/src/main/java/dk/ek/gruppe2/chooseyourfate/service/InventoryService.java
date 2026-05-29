@@ -86,18 +86,6 @@ public class InventoryService {
         return response;
     }
 
-    public void useItem(Integer inventoryId, Integer itemId) {
-        InventoryHasItem inventoryHasItem = inventoryHasItemRepository
-                .findById(new InventoryHasItemId(itemId, inventoryId))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-        if (inventoryHasItem.getAmount() > 1) {
-            inventoryHasItem.setAmount(inventoryHasItem.getAmount() - 1);
-            inventoryHasItemRepository.save(inventoryHasItem);
-        } else {
-            inventoryHasItemRepository.delete(inventoryHasItem);
-        }
-    }
 
     public void validateItemInInventory(Integer inventoryId, Integer itemId) {
         if (!inventoryHasItemRepository.existsByInventoryIdAndItemId(inventoryId, itemId)) {

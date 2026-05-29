@@ -29,7 +29,7 @@ public class InventoryController {
 
     @PostMapping("/{inventoryId}/items/{itemId}/use")
     @PreAuthorize("hasRole('ADMIN') or @characterAuthorizationService.canAccessCharacter(#id, authentication)")
-    public void useItem(@PathVariable Integer inventoryId, @PathVariable Integer itemId) {
-        inventoryService.useItem(inventoryId, itemId);
+    public void removeItem(@PathVariable Integer inventoryId, @PathVariable Integer itemId) {
+        inventoryService.removeItem(inventoryId, itemId);
     }
 }

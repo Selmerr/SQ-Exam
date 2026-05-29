@@ -17,6 +17,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -199,6 +200,15 @@ class InventoryServiceTest {
     }
 
     @Test
+    void addItemToInventory_ShouldThrow_WhenInventoryDoesNotExist() {
+        when(inventoryRepository.findById(1)).thenReturn(Optional.empty());
+
+        assertThrows(ResponseStatusException.class, () ->
+                inventoryService.addItemToInventory(1, 1)
+        );
+    }
+    
+    @Test
     void toInventoryHasItemDTO_ShouldReturnDTO_WhenValidItemInInventory() {
         // Arrange
         Item fakeItem = new Item();
@@ -253,44 +263,6 @@ class InventoryServiceTest {
         assertThrows(NullPointerException.class, () ->
                 inventoryService.toInventoryResponseDTO(null)
         );
-    }
-
-    @Test
-    void useItem_ShouldRemoveItem_WhenAmountIsOne() {
-        Inventory fakeInventory = new Inventory();
-        fakeInventory.setId(1);
-        Item fakeItem = new Item();
-        fakeItem.setId(1);
-        InventoryHasItem fakeInventoryHasItem = new InventoryHasItem();
-        fakeInventoryHasItem.setInventory(fakeInventory);
-        fakeInventoryHasItem.setItem(fakeItem);
-        fakeInventoryHasItem.setAmount(1);
-
-        when(inventoryHasItemRepository.findById(new InventoryHasItemId(1, 1))).thenReturn(Optional.of(fakeInventoryHasItem));
-
-        inventoryService.useItem(fakeInventory.getId(), fakeItem.getId());
-
-        verify(inventoryHasItemRepository).delete(fakeInventoryHasItem);
-    }
-
-    @ParameterizedTest
-    @ValueSource(ints = {2, 99})
-    void useItem_ShouldDecreaseAmount_WhenAmountIsGreaterThanOne(int amount) {
-        Inventory fakeInventory = new Inventory();
-        fakeInventory.setId(1);
-        Item fakeItem = new Item();
-        fakeItem.setId(1);
-        InventoryHasItem fakeInventoryHasItem = new InventoryHasItem();
-        fakeInventoryHasItem.setInventory(fakeInventory);
-        fakeInventoryHasItem.setItem(fakeItem);
-        fakeInventoryHasItem.setAmount(amount);
-
-        when(inventoryHasItemRepository.findById(new InventoryHasItemId(1, 1))).thenReturn(Optional.of(fakeInventoryHasItem));
-
-        inventoryService.useItem(fakeInventory.getId(), fakeItem.getId());
-
-        assertEquals(amount-1, fakeInventoryHasItem.getAmount());
-        verify(inventoryHasItemRepository).save(fakeInventoryHasItem);
     }
 
     @Test
