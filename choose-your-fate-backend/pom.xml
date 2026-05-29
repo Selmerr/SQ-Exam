@@ -225,17 +225,7 @@
 						</goals>
 					</execution>
 				</executions>
-
-				<configuration>
-
-					<!-- ONLY integration folder -->
-					<includes>
-						<include>**/*IT.java</include>
-					</includes>
-
-				</configuration>
 			</plugin>
-
 		</plugins>
 	</build>
 
