@@ -4,9 +4,9 @@ on:
     workflows: ["Java CI with Maven"]
     types:
       - completed
-  push:
-    branches: [ main, master ]
-    
+  pull_request:
+    branches: [ main ]
+
   workflow_dispatch:
 
 jobs:
