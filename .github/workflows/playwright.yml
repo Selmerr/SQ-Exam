@@ -27,7 +27,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: ./choose-your-fate-backend/target
       - name: Run docker compose
-        run: docker compose up -d
+        run: docker compose --profile prod up -d
       - name: Wait for services
         run: sleep 30
       - name: Install dependencies
