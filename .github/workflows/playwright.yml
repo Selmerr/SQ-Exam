@@ -4,8 +4,6 @@ on:
     workflows: ["Java CI with Maven"]
     types:
       - completed
-  pull_request:
-    branches: [ main ]
 
   workflow_dispatch:
 
