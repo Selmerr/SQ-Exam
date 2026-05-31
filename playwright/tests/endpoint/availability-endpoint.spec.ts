@@ -2,16 +2,46 @@ import {test , expect, APIRequestContext} from '@playwright/test';
 
 
 const rootEndpoint = 'availability';
+const authEndpoint = 'auth/';
 
 test.skip(({ browserName }) => browserName !== 'chromium',
     'Stateful backend; serialized to chromium project only');
 
-const adminHeaders = () => ({ Authorization: `Bearer ${process.env.ADMIN_TOKEN}` });
-const userHeaders = () => ({ Authorization: `Bearer ${process.env.USER_TOKEN}` });
+let adminToken: string;
+let userToken: string;
+
+const adminHeaders = () => ({ Authorization: `Bearer ${adminToken}` });
+const userHeaders = () => ({ Authorization: `Bearer ${userToken}` });
 
 // Makes sure the tests run serally, as these tests mutate the gobal routing state on the backend.
 test.describe.configure({mode: 'serial'})
 
+test.beforeAll(async ({ request }) => {
+    adminToken = await loginAndReturnToken(request, 'admin', 'admin123');
+    userToken = await loginAndReturnToken(request, 'fisk', 'fisk123');
+});
+
+async function loginAndReturnToken(
+    request: APIRequestContext,
+    username: string,
+    password: string
+): Promise<string> {
+    const response = await request.post(
+        process.env.API_URL + authEndpoint + 'login',
+        {
+            data: {
+                username,
+                password
+            }
+        }
+    );
+
+    const body = await response.text();
+    expect(response.status(), body).toBe(200);
+
+    const data: { token: string } = JSON.parse(body);
+    return data.token;
+}
 
 async function ensurePrimaryActiveState(request: APIRequestContext): Promise<void> {
     const statusResponse = await request.get(

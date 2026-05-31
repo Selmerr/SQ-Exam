@@ -17,10 +17,10 @@ services:
     ports:
       - "8080:8080"
     environment:
-      MYSQL_URI: jdbc:mysql://rpg_mysql_sq:3306/choose_your_fate
+      MYSQL_URI: jdbc:mysql://rpg_mysql_sq:3307/choose_your_fate
       MYSQL_USERNAME: root
       MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD:-123456}
-      MYSQL_SECONDARY_URI: jdbc:mysql://rpg_mysql_secondary:3306/choose_your_fate
+      MYSQL_SECONDARY_URI: jdbc:mysql://rpg_mysql_secondary:3308/choose_your_fate
       MYSQL_SECONDARY_USERNAME: root
       MYSQL_SECONDARY_PASSWORD: ${MYSQL_SECONDARY_ROOT_PASSWORD:-123456}
       ELEVEN_LABS_API_KEY: ${ELEVEN_LABS_API_KEY:-}
@@ -56,7 +56,7 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_SECONDARY_ROOT_PASSWORD:-123456}
     volumes:
       - rpg_mysql_secondary:/var/lib/mysql
-      - ./rpg_mysql:/docker-entrypoint-initdb.d
+      - ./rpg_mysql_sq:/docker-entrypoint-initdb.d
     hostname: rpg_mysql_secondary
 
 volumes:
