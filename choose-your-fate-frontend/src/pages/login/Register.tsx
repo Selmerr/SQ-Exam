@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { register } from "../../api/authApi"
-import "./login.css"
+import "./Login.css"
 
 export default function Register() {
     const navigate = useNavigate();
@@ -12,7 +12,7 @@ export default function Register() {
 
     const handleRegister = async () => {
       try {
-        const data = await register(username, email, password);
+        await register(username, email, password);
         
         navigate("/");
       } catch (err) {
