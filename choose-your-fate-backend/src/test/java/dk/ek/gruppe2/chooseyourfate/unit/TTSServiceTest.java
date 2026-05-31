@@ -20,7 +20,6 @@ import dk.ek.gruppe2.chooseyourfate.model.mysql.CharacterPath;
 import dk.ek.gruppe2.chooseyourfate.repository.mysql.CharacterPathRepository;
 import dk.ek.gruppe2.chooseyourfate.service.TTSService;
 
-@SpringBootTest()
 @ExtendWith(MockitoExtension.class)
 class TTSServiceTest {
 
