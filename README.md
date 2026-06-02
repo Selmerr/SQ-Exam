@@ -54,14 +54,6 @@ Swagger UI is available at:
 Deployed Swagger UI is available at:
 https://rpg-choose-your-fate.onrender.com/swagger-ui/index.html#/
 
-Database dump files should be placed in the [database_backups](C:\Users\pf\Desktop\Skole\Databases\projects\mandetory\RPG_Choose_Your_Fate\database_backups) folder.
-
-- MongoDB dump path: [database_backups/mongo](C:\Users\pf\Desktop\Skole\Databases\projects\mandetory\RPG_Choose_Your_Fate\database_backups\mongo)
-- Neo4j dump path: [database_backups/neo4j](C:\Users\pf\Desktop\Skole\Databases\projects\mandetory\RPG_Choose_Your_Fate\database_backups\neo4j)
-
-How ever we do not use them. We run the migration process to populate mongoDB and neo4j
-with data. The files are only include because they are part the required deliverables.
-
 ## SQL scripts
 
 All SQL scripts are located in the [rpg_mysql](C:\Users\pf\Desktop\Skole\Databases\projects\mandetory\RPG_Choose_Your_Fate\rpg_mysql) folder.
